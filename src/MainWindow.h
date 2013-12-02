@@ -6,6 +6,7 @@
 #include <FileDialog.h>
 #include <QGLViewerExt.h>
 #include <VolObjCtrl.h>
+#include <AniCtrl.h>
 #include "PerturbationOp.h"
 #include "DataModel.h"
 #include "DataModelRender.h"
@@ -41,6 +42,7 @@ namespace SIMULATOR{
 	pVolObjCtrl _volObjCtrl;
 	pSimSelectionCtrl _selCtrl;
 	pDataModelRenderCtrl _renderCtrl;
+	pAniCtrl _aniCtrl;
   };
   
   typedef boost::shared_ptr<MainWindow> pMainWindow;

@@ -39,9 +39,16 @@ TARGET_LINK_LIBRARIES(${APPNAME}
  
   /usr/local/lib/libutility_ui.a
   /usr/local/lib/libutility_common.a
+  /usr/local/lib/libutility_math.a
+  /usr/local/lib/libutility_elastic.a
+  
   ${QGLViewer_LIBRARIES}
   ${QT_LIBRARIES}
   ${GLEW_LIBRARY}
   ${OPENGL_LIBRARIES}
   ${Boost_LIBRARIES}
+
+  ${ARPACK_LIBRARIES}
+  ${SUPERLU2.0_LIBRARIES}
+  /usr/lib/libblas.so
 )

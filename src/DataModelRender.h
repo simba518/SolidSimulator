@@ -76,12 +76,20 @@ namespace SIMULATOR{
 	}
 	void drawVolMesh()const{
 	  const pTetMesh_const tetmesh = _dataModel->getVolMesh();
-	  if(tetmesh) UTILITY::draw(tetmesh);
+	  if(tetmesh){
+		const VectorXd &u = _dataModel->getU();
+		if(u.size() > 0){
+		  assert_eq(u.size(),tetmesh->nodes().size()*3);
+		  UTILITY::draw(tetmesh,&u[0]);
+		}else{
+		  UTILITY::draw(tetmesh);
+		}
+	  }
 	}
 	void drawConstraints()const{
 	  const pTetMesh_const tetmesh = _dataModel->getVolMesh();
-	  const PartialConstraints &posCon = _dataModel->getPosConstraints();
-	  node_group_render.draw(tetmesh,posCon.getConNodesSet(),NULL,UTILITY::DRAW_POINT);
+	  const set<int> &nodes = _dataModel->getFixedNodes();
+	  node_group_render.draw(tetmesh,nodes,NULL,UTILITY::DRAW_POINT);
 	}
 	void drawTetGroups()const{
 
@@ -153,7 +161,7 @@ namespace SIMULATOR{
 	DataModelRenderCtrl(pQGLViewerExt viewer,pDataModel dm):_viewer(viewer){
   
 	  _modelRender=pDataModelRender(new DataModelRender(dm));
-	  _modelRender->setRenderType(OBJ|VOL|CON_NODES|TET_MATERIAL|TET_GROUPS);
+	  _modelRender->setRenderType(OBJ|VOL|CON_NODES);
 	  if(_viewer != NULL)
 		_viewer->addSelfRenderEle(_modelRender);
 	}

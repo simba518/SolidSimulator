@@ -47,6 +47,10 @@ void MainWindow::createConnections(){
 		  _viewer,SLOT(resetSceneBoundBox(double,double,double,double,double,double)));
   connect(_volObjCtrl.get(),SIGNAL(resetSceneMsg(double,double,double,double,double,double)),
 		  _dataModel.get(),SLOT(resetMaterialGroup()));
+  connect(_volObjCtrl.get(),SIGNAL(resetSceneMsg(double,double,double,double,double,double)),
+		  _dataModel.get(),SLOT(prepareSimulation()));
+  connect(_mainwindow.actionPrepareSimulation,SIGNAL(triggered()),
+		  _dataModel.get(),SLOT(prepareSimulation()));
   
   connect(_mainwindow.actionSelectTets, SIGNAL(triggered()), _selCtrl.get(), SLOT(selectTets()));
   connect(_mainwindow.actionSelectNodes, SIGNAL(triggered()), _selCtrl.get(), SLOT(selectNodes()));
@@ -59,6 +63,12 @@ void MainWindow::createConnections(){
   connect(_mainwindow.actionConNodes,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowConNodes())); 
   connect(_mainwindow.actionTetGroups,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowTetGroups()));  
   connect(_mainwindow.actionMaterialGroups,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowTetMaterials())); 
+
+  // simulation
+  connect(_viewer,SIGNAL(updateAnimation()),_dataModel.get(),SLOT(simulate()));
+  connect(_mainwindow.actionPauseSimulation,SIGNAL(triggered()),_viewer,SLOT(pauseAnimation()));
+  connect(_mainwindow.actionReset,SIGNAL(triggered()),_dataModel.get(),SLOT(reset()));
+
 }
 
 void MainWindow::paserCommandLine(){
@@ -91,11 +101,11 @@ void MainWindow::loadInitFile(){
 void MainWindow::saveConNodes(){
   const string fname = _fileDialog->save();
   if(fname.size() >0)
-	_fileDialog->warning(_dataModel->saveConNodes(fname));
+	_fileDialog->warning(_dataModel->saveFixedNodes(fname));
 }
 
 void MainWindow::loadConNodes(){
   const string fname = _fileDialog->load();
   if(fname.size() >0)
-	_fileDialog->warning(_dataModel->loadConNodes(fname));
+	_fileDialog->warning(_dataModel->loadFixedNodes(fname));
 }

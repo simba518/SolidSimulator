@@ -4,7 +4,7 @@
 #include <boost/shared_ptr.hpp>
 #include <QObject>
 #include <Log.h>
-#include <PartialConstraints.h>
+#include <AuxTools.h>
 #include <TetMeshEmbeding.h>
 #include "Simulator.h"
 #include "ElasticMtlGroups.h"
@@ -32,15 +32,23 @@ namespace SIMULATOR{
 
 	// set fixed nodes
 	void addFixedNodes(const vector<int> &sel_ids){
-	  _posCon.addConNodes(sel_ids);
+	  for (size_t i = 0; i < sel_ids.size(); ++i){
+		assert_ge(sel_ids[i],0);
+		_fixedNodes.insert(sel_ids[i]);
+	  }
 	}
 	void removeFixedNodes(const vector<int> &sel_ids){
-	  _posCon.rmConNodes(sel_ids);
+	  for (size_t i = 0; i < sel_ids.size(); ++i){
+		_fixedNodes.erase(sel_ids[i]);
+	  }
 	}
 
 	// perturbation
 	void setForces(const int nodeId,const double force[3]){
-	  ///@todo
+	  if(_simulator){
+		_simulator->setExtForces(nodeId,force);
+		this->simulate();
+	  }
 	}
 
 	// get data
@@ -50,8 +58,8 @@ namespace SIMULATOR{
 	const pTetMesh_const getVolMesh()const{
 	  return _volObj->getTetMesh();
 	}
-	const PartialConstraints &getPosConstraints()const{
-	  return _posCon;
+	const set<int> &getFixedNodes()const{
+	  return _fixedNodes;
 	}
 	const ElasticMtlGroups &getElasticMtlGroups()const{
 	  return _mtlGroups;
@@ -59,26 +67,25 @@ namespace SIMULATOR{
 	ElasticMtlGroups &getElasticMtlGroups(){
 	  return _mtlGroups;
 	}
+	const VectorXd &getU()const{
+	  assert(_simulator);
+	  return _simulator->getU();
+	}
 
 	// io
-	bool saveConNodes(const string filename)const{
-	  ofstream outf(filename.c_str());
-	  if(!outf.is_open()){
-		ERROR_LOG("failed to open file " << filename);
-		return false;
-	  }
-	  const vector<set<int> > &vs = _posCon.getConNodesSet();
-	  outf << _posCon.numConNodes() << "\n";
-	  BOOST_FOREACH(const set<int> &s, vs){
-		BOOST_FOREACH(const int ele, s){
-		  outf << ele << " ";
-		}
+	bool saveFixedNodes(const string filename)const{
+
+	  OUTFILE(outf,filename.c_str());
+	  if(!outf.is_open()) return false;
+	  outf << _fixedNodes.size() << "\n";
+	  BOOST_FOREACH(const int ele, _fixedNodes){
+		outf << ele << " ";
 	  }
 	  const bool succ = outf.good();
 	  outf.close();
 	  return succ;
 	}
-	bool loadConNodes(const string filename){
+	bool loadFixedNodes(const string filename){
 	  return false;
 	}
 	bool saveElasticMaterial(const string filename)const{
@@ -91,20 +98,34 @@ namespace SIMULATOR{
 		_mtlGroups.reset(_volObj->getTetMesh()->tets().size());
 	  }
 	}
+	void prepareSimulation(){
+
+	  if(_simulator && _volObj->getTetMesh()){
+		_simulator->setVolMesh(_volObj->getTetMesh());
+		_simulator->setFixedNodes(_fixedNodes);
+		const bool succ = _simulator->precompute();
+		ERROR_LOG_COND("the precomputation is failed.",succ);
+	  }
+	}
 	void setMaterial(){
 	  if(_volObj && _volObj->getTetMesh())
 		_mtlGroups.setMaterial(_volObj->getTetMesh()->material());
 	}
 	bool simulate(){
+	  bool succ = false;
+	  if(_simulator) succ = _simulator->simulate();
+	  ERROR_LOG_COND("simulation failed.",succ);
+	  return succ;
+	}
+	void reset(){
 	  if(_simulator)
-		return _simulator->simulate();
-	  return false;
+		_simulator->reset();
 	}
 	
   private:
 	pSimulator _simulator;
 	pTetMeshEmbeding _volObj;
-	PartialConstraints _posCon;
+	set<int> _fixedNodes;
 	ElasticMtlGroups _mtlGroups;
   };
   

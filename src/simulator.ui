@@ -76,7 +76,6 @@
     <addaction name="actionLoadVol"/>
     <addaction name="actionSaveConNodes"/>
     <addaction name="actionLoadConNodes"/>
-    <addaction name="actionSimulate"/>
     <addaction name="menuSelectType"/>
     <addaction name="actionExit"/>
    </widget>
@@ -90,8 +89,17 @@
     <addaction name="actionConNodes"/>
     <addaction name="actionMaterialGroups"/>
    </widget>
+   <widget class="QMenu" name="menuSimulation">
+    <property name="title">
+     <string>Simulation</string>
+    </property>
+    <addaction name="actionPrepareSimulation"/>
+    <addaction name="actionPauseSimulation"/>
+    <addaction name="actionReset"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menuView"/>
+   <addaction name="menuSimulation"/>
   </widget>
   <action name="actionLoadInitFile">
    <property name="text">
@@ -142,28 +150,87 @@
    </property>
   </action>
   <action name="actionVolMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>VolMesh</string>
    </property>
+   <property name="shortcut">
+    <string>V</string>
+   </property>
   </action>
   <action name="actionObjMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>ObjMesh</string>
+   </property>
+   <property name="shortcut">
+    <string>W</string>
    </property>
   </action>
   <action name="actionTetGroups">
    <property name="text">
     <string>TetGroups</string>
    </property>
+   <property name="shortcut">
+    <string>T</string>
+   </property>
   </action>
   <action name="actionConNodes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>ConNodes</string>
+   </property>
+   <property name="shortcut">
+    <string>C</string>
    </property>
   </action>
   <action name="actionMaterialGroups">
    <property name="text">
     <string>MaterialGroups</string>
+   </property>
+   <property name="shortcut">
+    <string>A</string>
+   </property>
+  </action>
+  <action name="actionPrepareSimulation">
+   <property name="text">
+    <string>PrepareSimulation</string>
+   </property>
+  </action>
+  <action name="actionPauseSimulation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>PauseSimulation</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionStopSimulation">
+   <property name="text">
+    <string>StopSimulation</string>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="text">
+    <string>Reset</string>
    </property>
   </action>
  </widget>

@@ -1,0 +1,47 @@
+\documentclass[9pt,twocolumn]{extarticle}
+
+\usepackage[hmargin=0.5in,tmargin=0.5in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{subfigure}
+
+\usepackage{cleveref}
+\usepackage{color}
+\newcommand{\TODO}[1]{\textcolor{red}{#1}}
+
+\newcommand{\FPP}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\argmin}{\operatornamewithlimits{arg\ min}}
+\author{Siwang Li}
+
+\title{decoupled simulator}
+
+%% document begin here
+\begin{document}
+\maketitle
+
+\setlength{\parskip}{0.5ex}
+
+\section{Implicit integration}
+\begin{eqnarray}
+ v_{i+1} &=& v_{i} + h(f-dv_{i+1}-\lambda z_{i+1})\\
+ z_{i+1} &=&  z_{i} + hv_{i+1}
+\end{eqnarray}
+
+\begin{eqnarray}
+ v_{i+1} &=& v_{i} + h(f-dv_{i+1}-\lambda(z_{i} + hv_{i+1}))\\
+ z_{i+1} &=&  z_{i} + hv_{i+1}
+\end{eqnarray}
+
+\begin{eqnarray}
+ (1+hd+\lambda h^2)v_{i+1} &=& v_{i} + hf - h\lambda z_{i}\\
+ z_{i+1} &=&  z_{i} + hv_{i+1}
+\end{eqnarray}
+
+\begin{eqnarray}
+ v_{i+1} &=& \frac{v_{i} + hf - h\lambda z_{i}}{1+hd+\lambda h^2}\\
+ z_{i+1} &=&  z_{i} + hv_{i+1}
+\end{eqnarray}
+
+
+\end{document}

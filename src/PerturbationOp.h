@@ -29,13 +29,17 @@ namespace SIMULATOR{
 	}
 	void drawWithNames ()const{
 	  pTetMesh_const tetmesh = _dataModel->getVolMesh();
+
 	  assert(tetmesh);
 	  glFlush();
+	  const VectorXd &u = _dataModel->getU();		
+	  assert_eq(u.size(),tetmesh->nodes().size()*3);
 	  for (int i=0; i<tetmesh->nodes().size(); i++){
+
 		const Vector3d &v = tetmesh->nodes()[i];
 		glPushName(i);
 		glBegin(GL_POINTS);
-		glVertex3d(v[0], v[1], v[2]);
+		glVertex3d(v[0]+u[i*3+0], v[1]+u[i*3+1], v[2]+u[i*3+2]);
 		glEnd();
 		glPopName();
 	  }
@@ -64,19 +68,46 @@ namespace SIMULATOR{
 	
 	// render
 	void draw()const{
-	  /// @todo
+
+	  if(_dataModel){
+
+		const pTetMesh_const tetmesh = _dataModel->getVolMesh();
+		const int i = _perturbator.getPerturbNodeId();
+		if(tetmesh && i >= 0){
+
+		  assert_in(i,0,tetmesh->nodes().size()-1);
+		  Vector3d n = tetmesh->nodes()[i];
+		  const VectorXd &u = _dataModel->getU();
+		  if(u.size()>0){
+			n[0] += u[i*3+0];
+			n[1] += u[i*3+1];
+			n[2] += u[i*3+2];
+		  }
+
+		  glDisable(GL_LIGHTING);
+		  glColor3d(1.0,0.0f,0.0f);
+		  glPointSize(8.0f);
+		  glBegin(GL_POINTS);
+		  glVertex3d(n[0],n[1],n[2]);
+		  glEnd();
+		}
+	  }
 	}
 
 	// hook
 	void getDragedPoint(double point[3])const{
+
 	  assert(_dataModel);
 	  assert(_dataModel->getVolMesh());
 	  const VVec3d &nodes = _dataModel->getVolMesh()->nodes();
 	  const int n = _perturbator.getPerturbNodeId();
+	  const VectorXd &u = _dataModel->getU();
+	  assert_eq(u.size(),nodes.size()*3);
 	  assert_in(n,0,nodes.size()-1);
-	  point[0] = nodes[n][0];
-	  point[1] = nodes[n][1];
-	  point[2] = nodes[n][2];
+
+	  point[0] = nodes[n][0]+u[n*3+0];
+	  point[1] = nodes[n][1]+u[n*3+1];
+	  point[2] = nodes[n][2]+u[n*3+2];
 	}
 	
   private:
