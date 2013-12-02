@@ -22,16 +22,9 @@ void MainWindow::createComponents(){
   // render
   _renderCtrl = pDataModelRenderCtrl(new DataModelRenderCtrl(_viewer,_dataModel));
 
-  // selection
+  // selection, drag
   _selCtrl = pSimSelectionCtrl(new SimSelectionCtrl(_viewer,_dataModel));
-  
-  // drag
-  pDragOp drag = pDragOp(new DragOp(_viewer,_dataModel));
-  pDragCtrl dragCtrl = pDragCtrl( new DragCtrl(_viewer,drag) );
-  dragCtrl->setObserver(drag);
-  dragCtrl->setDragHook(drag);
-  _viewer->addSelfRenderEle(drag);
-
+  _perturb = pPerturbationCtrl(new PerturbationCtrl(_viewer,_dataModel));
 
   // menu
   QActionGroup* selection_group = new QActionGroup(this);

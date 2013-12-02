@@ -6,9 +6,9 @@
 #include <FileDialog.h>
 #include <QGLViewerExt.h>
 #include <VolObjCtrl.h>
+#include "PerturbationOp.h"
 #include "DataModel.h"
 #include "DataModelRender.h"
-#include "DragOp.h"
 #include "SelectionOp.h"
 #include <boost/shared_ptr.hpp>
 using namespace QGLVEXT;
@@ -35,6 +35,7 @@ namespace SIMULATOR{
 	Ui::MainWindow _mainwindow;
 	pQGLViewerExt _viewer;
 	pFileDialog _fileDialog;
+	pPerturbationCtrl _perturb;
 
 	pDataModel _dataModel;
 	pVolObjCtrl _volObjCtrl;

@@ -6,6 +6,7 @@
 #include <Log.h>
 #include <PartialConstraints.h>
 #include <TetMeshEmbeding.h>
+#include "Simulator.h"
 #include "ElasticMtlGroups.h"
 using namespace std;
 using namespace UTILITY;
@@ -23,21 +24,26 @@ namespace SIMULATOR{
   public:
 	DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
 	  assert(embeding);
+	  _simulator = pSimulator(new Simulator());
 	}
 	bool loadSetting(const string filename){
 	  return false;
 	}
 
-	void addConNodes(const vector<int> &sel_ids){
+	// set fixed nodes
+	void addFixedNodes(const vector<int> &sel_ids){
 	  _posCon.addConNodes(sel_ids);
 	}
-	void removeConNodes(const vector<int> &sel_ids){
+	void removeFixedNodes(const vector<int> &sel_ids){
 	  _posCon.rmConNodes(sel_ids);
 	}
-	void updatePosCon(const Matrix<double,3,-1> &pos,const int groupId){
-	  _posCon.updatePc(pos,groupId);
+
+	// perturbation
+	void setForces(const int nodeId,const double force[3]){
+	  ///@todo
 	}
 
+	// get data
 	const pObjmesh_const getObjMesh()const{
 	  return _volObj->getObjMesh();
 	}
@@ -54,6 +60,7 @@ namespace SIMULATOR{
 	  return _mtlGroups;
 	}
 
+	// io
 	bool saveConNodes(const string filename)const{
 	  ofstream outf(filename.c_str());
 	  if(!outf.is_open()){
@@ -89,10 +96,13 @@ namespace SIMULATOR{
 		_mtlGroups.setMaterial(_volObj->getTetMesh()->material());
 	}
 	bool simulate(){
+	  if(_simulator)
+		return _simulator->simulate();
 	  return false;
 	}
 	
   private:
+	pSimulator _simulator;
 	pTetMeshEmbeding _volObj;
 	PartialConstraints _posCon;
 	ElasticMtlGroups _mtlGroups;

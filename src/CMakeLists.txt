@@ -1,6 +1,7 @@
 SET(APPNAME SimulatorUI)
 
 SET(NONE_QT_CPP
+  Simulator.cpp
   ElasticMtlGroups.cpp
   main.cpp
 )
@@ -11,6 +12,8 @@ SET(UI_SOURCES
 
 SET(UI_HEADERS 
 
+  PerturbationOp.h
+  SelectionOp.h
   MainWindow.h
   SelectionOp.h
   DataModelRender.h

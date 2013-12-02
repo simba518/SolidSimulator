@@ -36,10 +36,10 @@ namespace SIMULATOR{
 	  }
 	}
 	void addSelection(const vector<int> &sel_ids){
-	  _dataModel->addConNodes(sel_ids);
+	  _dataModel->addFixedNodes(sel_ids);
 	}
 	void removeSelection(const vector<int> &sel_ids){
-	  _dataModel->removeConNodes(sel_ids);
+	  _dataModel->removeFixedNodes(sel_ids);
 	}
 	
   private:
