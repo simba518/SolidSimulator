@@ -21,26 +21,7 @@ namespace SIMULATOR{
 	void reset(const int totalElements,
 			   const double rho=DEFULT_DENSITY,
 			   const double E=DEFULT_YOUNG,
-			   const double v=DEFULT_POSSION){
-
-	  assert_ge(totalElements,0);
-	  assert_gt(rho,0.0f);
-	  assert_gt(E,0.0f);
-	  assert_in(v,0.0f,0.5f);
-	  _rho.clear();
-	  _E.clear();
-	  _v.clear();
-	  _rho.push_back(rho);
-	  _E.push_back(E);
-	  _v.push_back(v);
-
-	  _tetGroups.clear();
-	  vector<int> g(totalElements);
-	  for (size_t i = 0; i < g.size(); ++i)
-		g[i] = i;
-	  _tetGroups.addGroup(g);
-	  _elementsNum = totalElements;
-	}
+			   const double v=DEFULT_POSSION);
 	const vector<double> &density()const{ return _rho;}
 	const vector<double> &young()const{ return _E;}
 	const vector<double> &possion()const{ return _v;}
@@ -61,40 +42,10 @@ namespace SIMULATOR{
 		  resetMtl();
 	  }
 	}
-	void getColors(vector<double> &colors)const{
-	  
-	  colors.resize(numGroups()*3);
-	  double min,max;
-	  MaxMin(_rho,min,max);
-	  for (size_t i = 0; i < _rho.size(); ++i){
-		if (max-min > 0.0f){
-		  colors[i*3+0] = (_rho[i]-min)/(max-min);
-		}else{
-		  colors[i*3+0] = 1.0f;
-		}
-	  }
-
-	  MaxMin(_E,min,max);
-	  for (size_t i = 0; i < _E.size(); ++i){
-		if (max-min > 0.0f){
-		  colors[i*3+1] = (_E[i]-min)/(max-min);
-		}else{
-		  colors[i*3+1] = 1.0f;
-		}
-	  }
-
-	  MaxMin(_v,min,max);
-	  for (size_t i = 0; i < _v.size(); ++i){
-		if (max-min > 0.0f){
-		  colors[i*3+2] = (_v[i]-min)/(max-min);
-		}else{
-		  colors[i*3+2] = 1.0f;
-		}
-	  }
-
-	}
+	void getMtlColors(vector<double> &colors)const;
+	void getGroupColor(const int gid,double color[3])const;
 	int numGroups()const{
-	  return _rho.size();
+	  return _tetGroups.numGroup();
 	}
 	bool save(const string filename)const{
 	  /// @todo

@@ -20,8 +20,7 @@ void MainWindow::createComponents(){
   _dataModel = pDataModel(new DataModel(embeding));
 
   // render
-  pDataModelRender _dataModelRender = pDataModelRender(new DataModelRender(_dataModel));
-  _viewer->addSelfRenderEle(_dataModelRender);
+  _renderCtrl = pDataModelRenderCtrl(new DataModelRenderCtrl(_viewer,_dataModel));
 
   // selection
   _selCtrl = pSimSelectionCtrl(new SimSelectionCtrl(_viewer,_dataModel));
@@ -32,19 +31,41 @@ void MainWindow::createComponents(){
   dragCtrl->setObserver(drag);
   dragCtrl->setDragHook(drag);
   _viewer->addSelfRenderEle(drag);
+
+
+  // menu
+  QActionGroup* selection_group = new QActionGroup(this);
+  _mainwindow.actionSelectNodes->setCheckable(true);
+  _mainwindow.actionSelectTets->setCheckable(true);
+  _mainwindow.actionSelectNodes->setActionGroup(selection_group);
+  _mainwindow.actionSelectTets->setActionGroup(selection_group);
+  _mainwindow.actionSelectNodes->setChecked(true);
 }
 
 void MainWindow::createConnections(){
   
   connect(_mainwindow.actionLoadInitFile, SIGNAL(triggered()),this,SLOT(loadInitFile()));
-  connect(_mainwindow.actionLoadObj, SIGNAL(triggered()), _volObjCtrl.get(), SLOT(loadObjMesh()));
-  connect(_mainwindow.actionLoadVol, SIGNAL(triggered()), _volObjCtrl.get(), SLOT(loadVolMesh()));
   connect(_mainwindow.actionSaveConNodes, SIGNAL(triggered()),this,SLOT(saveConNodes()));
   connect(_mainwindow.actionLoadConNodes, SIGNAL(triggered()),this,SLOT(loadConNodes()));
+
+  connect(_mainwindow.actionLoadObj, SIGNAL(triggered()), _volObjCtrl.get(), SLOT(loadObjMesh()));
+  connect(_mainwindow.actionLoadVol, SIGNAL(triggered()), _volObjCtrl.get(), SLOT(loadVolMesh()));
   connect(_volObjCtrl.get(),SIGNAL(resetSceneMsg(double,double,double,double,double,double)),
 		  _viewer,SLOT(resetSceneBoundBox(double,double,double,double,double,double)));
-
+  connect(_volObjCtrl.get(),SIGNAL(resetSceneMsg(double,double,double,double,double,double)),
+		  _dataModel.get(),SLOT(resetMaterialGroup()));
+  
+  connect(_mainwindow.actionSelectTets, SIGNAL(triggered()), _selCtrl.get(), SLOT(selectTets()));
+  connect(_mainwindow.actionSelectNodes, SIGNAL(triggered()), _selCtrl.get(), SLOT(selectNodes()));
+  
   connect(_mainwindow.actionSimulate,SIGNAL(triggered()),_dataModel.get(),SLOT(simulate()));
+
+  // render
+  connect(_mainwindow.actionObjMesh,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowObj())); 
+  connect(_mainwindow.actionVolMesh,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowVol()));
+  connect(_mainwindow.actionConNodes,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowConNodes())); 
+  connect(_mainwindow.actionTetGroups,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowTetGroups()));  
+  connect(_mainwindow.actionMaterialGroups,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowTetMaterials())); 
 }
 
 void MainWindow::paserCommandLine(){

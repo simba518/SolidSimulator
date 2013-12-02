@@ -59,17 +59,21 @@ namespace SIMULATOR{
 	  return tetmesh->tets().size();
 	}
 	void drawWithNames ()const{
-	  /// @todo
+
 	  pTetMesh_const tetmesh = _dataModel->getVolMesh();
 	  assert(tetmesh);
+	  const VVec3d& v = tetmesh->nodes();
+	  const VVec4i& t = tetmesh->tets();
 	  glFlush();
-	  for (int i=0; i<tetmesh->tets().size(); i++){
-		// const Vector3d &v = tetmesh->nodes()[i];
-		// glPushName(i);
-		// glBegin(GL_POINTS);
-		// glVertex3d(v[0], v[1], v[2]);
-		// glEnd();
-		// glPopName();
+	  for (int i=0; i<t.size(); i++){
+		glPushName(i);
+		glBegin(GL_POINTS);
+		for (int j = 0; j < 4; ++j){
+		  const Vector3d& n = v[t[i][j]];
+		  glVertex3d(n[0],n[1],n[2]);
+		}
+		glEnd();
+		glPopName();
 	  }
 	}
 	void addSelection(const vector<int> &sel_ids){

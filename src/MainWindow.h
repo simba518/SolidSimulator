@@ -39,6 +39,7 @@ namespace SIMULATOR{
 	pDataModel _dataModel;
 	pVolObjCtrl _volObjCtrl;
 	pSimSelectionCtrl _selCtrl;
+	pDataModelRenderCtrl _renderCtrl;
   };
   
   typedef boost::shared_ptr<MainWindow> pMainWindow;

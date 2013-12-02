@@ -79,6 +79,11 @@ namespace SIMULATOR{
 	}
 
   public slots:
+	void resetMaterialGroup(){
+	  if(_volObj->getTetMesh()){
+		_mtlGroups.reset(_volObj->getTetMesh()->tets().size());
+	  }
+	}
 	void setMaterial(){
 	  if(_volObj && _volObj->getTetMesh())
 		_mtlGroups.setMaterial(_volObj->getTetMesh()->material());
