@@ -32,7 +32,17 @@ bool Simulator::precompute(){
 
   /// compute W, lambda
   const SparseMatrix<double> Klower = EIGEN3EXT::getLower(K);
+
+  /// @bug the eigen solver(using arpack) can not be compiled in windows now.
+#ifdef WIN32
+  ERROR_LOG("no arpack solver, can not compute the general eigenvalue problem.");
+  const bool succ=false;
+  _W = MatrixXd::Identity(Klower.rows(),_eigenNum);
+  _lambda = VectorXd::Ones(_eigenNum);
+#else
   const bool succ=EigenSparseGenEigenSolver::solve(Klower,diagM,_W,_lambda,_eigenNum);
+#endif
+
   _W = P.transpose()*_W;
 
   reset();
