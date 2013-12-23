@@ -5,6 +5,7 @@
 #include <set>
 #include <TetMesh.h>
 #include <eigen3/Eigen/Dense>
+#include <JsonFilePaser.h>
 using namespace std;
 using namespace Eigen;
 using namespace UTILITY;
@@ -19,6 +20,7 @@ namespace SIMULATOR{
 	  setDamping(ak,am);
 	  _eigenNum = 30;
 	}
+	bool loadSetting(const string filename);
 	void setVolMesh(pTetMesh_const tetMesh){
 	  _tetMesh = tetMesh;
 	}
@@ -68,6 +70,15 @@ namespace SIMULATOR{
 	const set<int> &getFixedNodes()const{
 	  return _fixedNodes;
 	}
+	const MatrixXd &getW()const{
+	  return _W;
+	}
+	const VectorXd &getLambda()const{
+	  return _lambda;
+	}
+	const VectorXd &getZ()const{
+	  return _z;
+	}
 	void reset(){
 	  if(_tetMesh){
 		_u.resize(_tetMesh->nodes().size()*3);
@@ -80,6 +91,7 @@ namespace SIMULATOR{
 	  }
 	  clearExtForces();
 	}
+	void print()const;
 
   protected:
 	void forward();

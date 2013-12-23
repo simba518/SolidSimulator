@@ -52,6 +52,7 @@ namespace SIMULATOR{
   public:
 	SelectTets(pDataModel dm):_dataModel(dm){
 	  assert(dm);
+	  _fixSelectedTets = false;
 	}
 	int totalEleNum ()const{
 	  const pTetMesh_const tetmesh = _dataModel->getVolMesh();
@@ -77,14 +78,30 @@ namespace SIMULATOR{
 	  }
 	}
 	void addSelection(const vector<int> &sel_ids){
-	  _dataModel->getElasticMtlGroups().addGroup(sel_ids,totalEleNum());
+	  if (_fixSelectedTets){
+		vector<int> s = sel_ids;
+		_dataModel->getElasticMtlGroups().removeGroup(s);
+		_dataModel->getElasticMtlGroups().addGroup(s,totalEleNum());
+	  }else{
+		_dataModel->getElasticMtlGroups().addGroup(sel_ids,totalEleNum());
+	  }
 	}
 	void removeSelection(const vector<int> &sel_ids){
-	  _dataModel->getElasticMtlGroups().removeGroup(sel_ids,totalEleNum());
+	  if (_fixSelectedTets){
+		vector<int> s = sel_ids;
+		_dataModel->getElasticMtlGroups().removeGroup(s);
+		_dataModel->getElasticMtlGroups().removeGroup(s,totalEleNum());
+	  }else{
+		_dataModel->getElasticMtlGroups().removeGroup(sel_ids,totalEleNum());
+	  }
+	}
+	void toggleFixSelectedTets(){
+	  _fixSelectedTets = _fixSelectedTets ? false:true;
 	}
 	
   private:
 	pDataModel _dataModel;
+	bool _fixSelectedTets;
   };
   typedef boost::shared_ptr<SelectTets> pSelectTets;
 
@@ -109,7 +126,10 @@ namespace SIMULATOR{
 	  _selCtrl->setSelector(_selectTets);
 	  _selCtrl->setObserver(_selectTets);	  
 	}
-	void togglePrintSelEle(){ _selCtrl->togglePrintSelEle(); }
+	void togglePrintSelEle(){ 
+	  _selCtrl->togglePrintSelEle(); 
+	}
+	void toggleFixSelectedTets(){_selectTets->toggleFixSelectedTets();}
 
   private:
 	pSelectCtrl _selCtrl;

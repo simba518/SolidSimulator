@@ -30,6 +30,17 @@ namespace SIMULATOR{
   public:
 	DataModelRender(pDataModel dm):_dataModel(dm){
 	  assert(dm);
+	  _text = pTextForRender(new TextForRender());
+	}
+	void render(){
+
+	  if (_dataModel){
+		const string msg = string("recorded z ")+TOSTR(_dataModel->getRecoredZ().size());
+		_text->update(msg,40,40);
+	  }else{
+		_text->update("recorded z 0",10,10);
+	  }
+	  this->draw();
 	}
 	void draw()const{
 	  
@@ -48,6 +59,9 @@ namespace SIMULATOR{
 	  if (_renderType & TET_MATERIAL){
 		drawTetMaterial();
 	  }
+	}
+	pTextForRender getTextForRender()const{
+	  return _text;
 	}
 
 	void setRenderType(const int type){
@@ -149,6 +163,7 @@ namespace SIMULATOR{
   private:
 	VolNodeGroupRender node_group_render;
 	pDataModel _dataModel;
+	pTextForRender _text;
 	int _renderType;
   };  
   typedef boost::shared_ptr<DataModelRender> pDataModelRender;
@@ -162,8 +177,10 @@ namespace SIMULATOR{
   
 	  _modelRender=pDataModelRender(new DataModelRender(dm));
 	  _modelRender->setRenderType(OBJ|VOL|CON_NODES);
-	  if(_viewer != NULL)
+	  if(_viewer != NULL){
 		_viewer->addSelfRenderEle(_modelRender);
+		_viewer->addTextForRender(_modelRender->getTextForRender());
+	  }
 	}
 	
   public slots:

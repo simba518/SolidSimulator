@@ -31,6 +31,11 @@ namespace SIMULATOR{
 	void loadInitFile();
 	void saveConNodes();
 	void loadConNodes();
+	void saveElasticMaterial();
+	void loadElasticMaterial();
+	void saveRecordZ();
+	void saveEigenValues();
+	void saveEigenVectors();
 	
   private:
 	Ui::MainWindow _mainwindow;

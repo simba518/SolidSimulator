@@ -76,6 +76,13 @@
     <addaction name="actionLoadVol"/>
     <addaction name="actionSaveConNodes"/>
     <addaction name="actionLoadConNodes"/>
+    <addaction name="actionSaveMaterial"/>
+    <addaction name="actionLoadMaterial"/>
+    <addaction name="actionFixSelectedTets"/>
+    <addaction name="actionPrintSelected"/>
+    <addaction name="actionSaveRecordZ"/>
+    <addaction name="actionSaveEigenValues"/>
+    <addaction name="actionSaveEigenVectors"/>
     <addaction name="menuSelectType"/>
     <addaction name="actionExit"/>
    </widget>
@@ -96,6 +103,7 @@
     <addaction name="actionPrepareSimulation"/>
     <addaction name="actionPauseSimulation"/>
     <addaction name="actionReset"/>
+    <addaction name="actionRecord"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuView"/>
@@ -234,6 +242,55 @@
    </property>
    <property name="shortcut">
     <string>R</string>
+   </property>
+  </action>
+  <action name="actionFixSelectedTets">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>FixSelectedTets</string>
+   </property>
+  </action>
+  <action name="actionSaveMaterial">
+   <property name="text">
+    <string>SaveMaterial</string>
+   </property>
+  </action>
+  <action name="actionPrintSelected">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>PrintSelected</string>
+   </property>
+  </action>
+  <action name="actionLoadMaterial">
+   <property name="text">
+    <string>LoadMaterial</string>
+   </property>
+  </action>
+  <action name="actionRecord">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Record</string>
+   </property>
+  </action>
+  <action name="actionSaveRecordZ">
+   <property name="text">
+    <string>SaveRecordZ</string>
+   </property>
+  </action>
+  <action name="actionSaveEigenValues">
+   <property name="text">
+    <string>SaveEigenValues</string>
+   </property>
+  </action>
+  <action name="actionSaveEigenVectors">
+   <property name="text">
+    <string>SaveEigenVectors</string>
    </property>
   </action>
  </widget>

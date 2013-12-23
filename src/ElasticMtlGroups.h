@@ -42,19 +42,17 @@ namespace SIMULATOR{
 		  resetMtl();
 	  }
 	}
+	void removeGroup(vector<int> &g)const{
+	  _tetGroups.removeGroup(g);
+	}
 	void getMtlColors(vector<double> &colors)const;
 	void getGroupColor(const int gid,double color[3])const;
 	int numGroups()const{
 	  return _tetGroups.numGroup();
 	}
-	bool save(const string filename)const{
-	  /// @todo
-	  return false;
-	}
-	void setMaterial(ElasticMaterial<double> &mtl)const{
-	  mtl.reset(_elementsNum);
-	  /// @todo
-	}
+	bool save(const string filename)const;
+	bool load(const string filename);
+	void setMaterial(ElasticMaterial<double> &mtl)const;
 	
   protected:
 	void MaxMin(const vector<double> &v, double &max,double &min)const{

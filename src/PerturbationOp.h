@@ -21,7 +21,9 @@ namespace SIMULATOR{
 					 public SelfRenderEle, public DragHook{
 	
   public:
-	Perturbation(pQGLViewerExt viewer,pDataModel dm):_viewer(viewer),_dataModel(dm){}
+	Perturbation(pQGLViewerExt viewer,pDataModel dm):_viewer(viewer),_dataModel(dm){
+	  _perturbator.setPerturCompilance(10.0f);
+	}
 	int totalEleNum ()const{
 	  const pTetMesh_const tetmesh = _dataModel->getVolMesh();
 	  assert(tetmesh);

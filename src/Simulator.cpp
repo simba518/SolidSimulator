@@ -9,6 +9,22 @@ using namespace UTILITY;
 using namespace SIMULATOR;
 using namespace EIGEN3EXT;
 
+bool Simulator::loadSetting(const string filename){
+  
+  JsonFilePaser jsonf;
+  if (!jsonf.open(filename)){
+	return false;
+  }
+
+  bool succ = true;
+  succ &= jsonf.read("h",_h);
+  succ &= jsonf.read("alpha_k",_ak);
+  succ &= jsonf.read("alpha_m",_am);
+  succ &= jsonf.read("rw",_eigenNum);
+  
+  return succ;
+}
+
 bool Simulator::precompute(){
 
   if(!_tetMesh)
@@ -34,8 +50,12 @@ bool Simulator::precompute(){
   const SparseMatrix<double> Klower = EIGEN3EXT::getLower(K);
   const bool succ=EigenSparseGenEigenSolver::solve(Klower,diagM,_W,_lambda,_eigenNum);
   _W = P.transpose()*_W;
-
   reset();
+
+  // test Wt*M*W
+  const MatrixXd WtMW_I = _W.transpose()*M*_W-MatrixXd::Identity(_W.cols(),_W.cols());
+  cout << "(WtMW-I).norm(): " << WtMW_I.norm() << endl;
+
   return succ;
 }
 
@@ -61,4 +81,13 @@ void Simulator::forward(){
 	_v[i] = (_v[i]+_h*_F_reduced[i]-_h*_lambda[i]*_z[i])/(1+_h*d+_lambda[i]*_h*_h);
     _z[i] = _z[i]+_h*_v[i];
   }
+}
+
+void Simulator::print()const{
+  
+  cout << "num of fixed nodes: " << _fixedNodes.size() << endl;
+  cout << "num of eigen vales: " << _eigenNum << endl;;
+  cout << "h: " << _h << endl;
+  cout << "ak: " << _ak << endl;
+  cout << "am: " << _am << endl;
 }

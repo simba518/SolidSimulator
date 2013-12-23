@@ -5,7 +5,9 @@
 #include <QObject>
 #include <Log.h>
 #include <AuxTools.h>
+#include <MatrixIO.h>
 #include <TetMeshEmbeding.h>
+#include <JsonFilePaser.h>
 #include "Simulator.h"
 #include "ElasticMtlGroups.h"
 using namespace std;
@@ -25,9 +27,33 @@ namespace SIMULATOR{
 	DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
 	  assert(embeding);
 	  _simulator = pSimulator(new Simulator());
+	  _record = false;
 	}
 	bool loadSetting(const string filename){
-	  return false;
+	  
+	  JsonFilePaser jsonf;
+	  if (!jsonf.open(filename)){
+		ERROR_LOG("failed to open: " << filename);
+		return false;
+	  }
+
+	  bool succ = true;
+	  string mtlfile;
+	  if (jsonf.readFilePath("elastic_mtl",mtlfile)){
+		succ = loadElasticMaterial(mtlfile);
+	  }
+
+	  string fixed_node_file;
+	  if (jsonf.readFilePath("fixed_nodes", fixed_node_file)){
+		succ &= loadFixedNodes(fixed_node_file);
+	  }
+	  
+	  if (_simulator){
+		succ &= _simulator->loadSetting(filename);
+	  }
+
+	  print();
+	  return succ;
 	}
 
 	// set fixed nodes
@@ -86,10 +112,58 @@ namespace SIMULATOR{
 	  return succ;
 	}
 	bool loadFixedNodes(const string filename){
-	  return false;
+	  
+	  INFILE(in,filename.c_str());
+	  if(!in.is_open()) return false;
+
+	  bool succ = false;
+	  int len = 0;
+	  in >> len;
+	  if (len > 0){
+
+		succ = true;
+		_fixedNodes.clear();
+		for (int i = 0; i < len; ++i){
+
+		  int nodeid = 0;
+		  in >> nodeid;
+		  if (nodeid >= 0){
+			_fixedNodes.insert(nodeid);
+		  }else{
+			succ = false;
+			ERROR_LOG("the fixed node's id is invalid: " << nodeid);
+		  }
+		}
+	  }
+	  return succ;
 	}
+
 	bool saveElasticMaterial(const string filename)const{
 	  return _mtlGroups.save(filename);
+	}
+	bool loadElasticMaterial(const string filename){
+	  bool succ = _mtlGroups.load(filename);
+	  if (succ)	setMaterial();
+	  return succ;
+	}
+
+	bool saveEigenVectors(const string filename)const{
+	  return EIGEN3EXT::write(filename,_simulator->getW());
+	}
+	bool saveEigenValues(const string filename)const{
+	  return EIGEN3EXT::write(filename,_simulator->getLambda());
+	}
+
+	// record
+	const vector<VectorXd> &getRecoredZ()const{
+	  return _recorded_z;
+	}
+	bool saveRecordZ(const string filename)const{
+	  return EIGEN3EXT::write(filename,_recorded_z);
+	}
+	void print()const{
+	  if (_simulator)
+		_simulator->print();
 	}
 
   public slots:
@@ -101,6 +175,7 @@ namespace SIMULATOR{
 	void prepareSimulation(){
 
 	  if(_simulator && _volObj->getTetMesh()){
+		setMaterial();
 		_simulator->setVolMesh(_volObj->getTetMesh());
 		_simulator->setFixedNodes(_fixedNodes);
 		const bool succ = _simulator->precompute();
@@ -115,11 +190,20 @@ namespace SIMULATOR{
 	  bool succ = false;
 	  if(_simulator) succ = _simulator->simulate();
 	  ERROR_LOG_COND("simulation failed.",succ);
+	  if (succ && _record){
+		_recorded_z.push_back(_simulator->getZ());
+	  }
 	  return succ;
 	}
 	void reset(){
 	  if(_simulator)
 		_simulator->reset();
+	}
+	void toggleRecord(){
+	  _record = _record ? false:true;
+	}
+	void clearRecored(){
+	  _recorded_z.clear();
 	}
 	
   private:
@@ -127,6 +211,8 @@ namespace SIMULATOR{
 	pTetMeshEmbeding _volObj;
 	set<int> _fixedNodes;
 	ElasticMtlGroups _mtlGroups;
+	bool _record;
+	vector<VectorXd> _recorded_z;
   };
   
   typedef boost::shared_ptr<DataModel> pDataModel;
