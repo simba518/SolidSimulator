@@ -30,7 +30,9 @@ namespace SIMULATOR{
 	  _record = false;
 	}
 	bool loadSetting(const string filename){
-	  
+
+	  TRACE_FUN();
+
 	  JsonFilePaser jsonf;
 	  if (!jsonf.open(filename)){
 		ERROR_LOG("failed to open: " << filename);
@@ -140,6 +142,9 @@ namespace SIMULATOR{
 
 	bool saveElasticMaterial(const string filename)const{
 	  return _mtlGroups.save(filename);
+	}
+	bool saveElasticMaterialHinp(const string filename)const{
+	  return _mtlGroups.saveAsHinp(filename);
 	}
 	bool loadElasticMaterial(const string filename){
 	  bool succ = _mtlGroups.load(filename);

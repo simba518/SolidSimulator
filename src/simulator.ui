@@ -77,6 +77,7 @@
     <addaction name="actionSaveConNodes"/>
     <addaction name="actionLoadConNodes"/>
     <addaction name="actionSaveMaterial"/>
+    <addaction name="actionSaveMaterialAsHinp"/>
     <addaction name="actionLoadMaterial"/>
     <addaction name="actionFixSelectedTets"/>
     <addaction name="actionPrintSelected"/>
@@ -104,6 +105,7 @@
     <addaction name="actionPauseSimulation"/>
     <addaction name="actionReset"/>
     <addaction name="actionRecord"/>
+    <addaction name="actionClearRecordedZ"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuView"/>
@@ -203,16 +205,10 @@
    <property name="text">
     <string>ConNodes</string>
    </property>
-   <property name="shortcut">
-    <string>C</string>
-   </property>
   </action>
   <action name="actionMaterialGroups">
    <property name="text">
     <string>MaterialGroups</string>
-   </property>
-   <property name="shortcut">
-    <string>A</string>
    </property>
   </action>
   <action name="actionPrepareSimulation">
@@ -277,6 +273,9 @@
    <property name="text">
     <string>Record</string>
    </property>
+   <property name="shortcut">
+    <string>C</string>
+   </property>
   </action>
   <action name="actionSaveRecordZ">
    <property name="text">
@@ -291,6 +290,16 @@
   <action name="actionSaveEigenVectors">
    <property name="text">
     <string>SaveEigenVectors</string>
+   </property>
+  </action>
+  <action name="actionClearRecordedZ">
+   <property name="text">
+    <string>ClearRecordedZ</string>
+   </property>
+  </action>
+  <action name="actionSaveMaterialAsHinp">
+   <property name="text">
+    <string>SaveMaterialAsHinp</string>
    </property>
   </action>
  </widget>

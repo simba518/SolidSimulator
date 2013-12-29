@@ -3,6 +3,7 @@ using namespace SIMULATOR;
 
 MainWindow::MainWindow(QWidget *parent,Qt::WFlags flags):QMainWindow(parent,flags){
 	  
+  save_all_when_exit = false;
   createComponents();
   createConnections();
   paserCommandLine();
@@ -41,6 +42,7 @@ void MainWindow::createConnections(){
   connect(_mainwindow.actionSaveConNodes, SIGNAL(triggered()),this,SLOT(saveConNodes()));
   connect(_mainwindow.actionLoadConNodes, SIGNAL(triggered()),this,SLOT(loadConNodes()));
   connect(_mainwindow.actionSaveMaterial, SIGNAL(triggered()),this, SLOT(saveElasticMaterial()));
+  connect(_mainwindow.actionSaveMaterialAsHinp, SIGNAL(triggered()),this, SLOT(saveElasticMaterialHinp()));
   connect(_mainwindow.actionLoadMaterial, SIGNAL(triggered()),this, SLOT(loadElasticMaterial()));  
 
   connect(_mainwindow.actionLoadObj, SIGNAL(triggered()), _volObjCtrl.get(), SLOT(loadObjMesh()));
@@ -75,6 +77,7 @@ void MainWindow::createConnections(){
 
   // record
   connect(_mainwindow.actionRecord,SIGNAL(triggered()),_dataModel.get(),SLOT(toggleRecord()));
+  connect(_mainwindow.actionClearRecordedZ,SIGNAL(triggered()),_dataModel.get(),SLOT(clearRecored()));
   connect(_mainwindow.actionSaveRecordZ,SIGNAL(triggered()),this,SLOT(saveRecordZ()));
   connect(_mainwindow.actionSaveEigenValues,SIGNAL(triggered()),this,SLOT(saveEigenValues()));
   connect(_mainwindow.actionSaveEigenVectors,SIGNAL(triggered()),this,SLOT(saveEigenVectors()));
@@ -84,29 +87,46 @@ void MainWindow::createConnections(){
 void MainWindow::paserCommandLine(){
 
   QStringList cmdline_args = QCoreApplication::arguments();
-  if(cmdline_args.size() >= 2 ){
+  if( cmdline_args.size() >= 2 ){
+	const string init_filename = cmdline_args.at(1).toStdString();
+	loadInitFile(init_filename);
+  }
+  if(cmdline_args.size() >= 3){
+	const string auto_save = cmdline_args.at(2).toStdString();
+	save_all_when_exit = ("auto_save" == auto_save);
+  }
+}
 
-	string init_filename = cmdline_args.at(1).toStdString();
-	bool succ = false;
-	if(boost::filesystem::exists(init_filename)){
-	  succ = _volObjCtrl->initialize(init_filename);
-	  succ &= _dataModel->loadSetting(init_filename);
-	  if(succ){
-		INFO_LOG("success to load initfile from  " << init_filename);
-	  }else{
-		ERROR_LOG("failed to load initfile from  "<< init_filename);
-	  }	  
-	}else{
-	  ERROR_LOG("file " << init_filename <<" is not exist!" );
+void MainWindow::loadInitFile(const string filename){
+
+  this->init_filename = filename;
+  if(boost::filesystem::exists(filename)){
+
+	DEBUG_LOG("begin to load vol_obj");
+
+	bool succ = _volObjCtrl->initialize(filename);
+	succ &= _dataModel->loadSetting(filename);
+
+	JsonFilePaser jsonf;
+	jsonf.open(filename);
+	double con_penalty;
+	if( jsonf.read("con_penalty", con_penalty) ){
+	  _perturb->setPerturCompilance(con_penalty);
+	  INFO_LOG("con_penalty: "<<con_penalty );
 	}
+	_fileDialog->warning(succ);
+
+  }else{
+
+	ERROR_LOG("file " << filename <<" is not exist!" );
+	_fileDialog->warning(false);
   }
 }
 
 void MainWindow::loadInitFile(){
 
   const string filename = _fileDialog->load("ini");
-  if(filename.size() >0)
-	_fileDialog->warning(_dataModel->loadSetting(filename));
+  if(filename.size() >0) loadInitFile(filename);
 }
 
 void MainWindow::saveConNodes(){
@@ -127,6 +147,13 @@ void MainWindow::saveElasticMaterial(){
   const string fname = _fileDialog->save();
   if(fname.size() >0)
 	_fileDialog->warning(_dataModel->saveElasticMaterial(fname));
+}
+
+void MainWindow::saveElasticMaterialHinp(){
+  
+  const string fname = _fileDialog->save();
+  if(fname.size() >0)
+	_fileDialog->warning(_dataModel->saveElasticMaterialHinp(fname));
 }
 
 void MainWindow::loadElasticMaterial(){
@@ -154,4 +181,39 @@ void MainWindow::saveEigenVectors(){
   const string fname = _fileDialog->save();
   if(fname.size() >0)
 	_fileDialog->warning(_dataModel->saveEigenVectors(fname));
+}
+
+MainWindow::~MainWindow(){
+
+  if (save_all_when_exit){
+	
+	bool succ = false;
+	JsonFilePaser jsonf;
+	if ( jsonf.open(init_filename) ) {
+
+	  succ = true;
+	  assert(_dataModel);
+	  string fixed_nodes, eigenvalues, eigenvectors, training_z, mesh_hinp;
+
+	  succ = jsonf.readFilePath("fixed_nodes", fixed_nodes,false);
+	  if (succ)	succ = _dataModel->saveFixedNodes(fixed_nodes);
+	  ERROR_LOG_COND("faled to save fixed_nodes: "<< fixed_nodes, succ);
+
+	  succ = jsonf.readFilePath("mesh_hinp", mesh_hinp,false);
+	  if (succ)	succ = _dataModel->saveElasticMaterialHinp(mesh_hinp);
+	  ERROR_LOG_COND("faled to save mesh_hinp: "<< mesh_hinp, succ);
+
+	  succ = jsonf.readFilePath("eigenvalues", eigenvalues,false);
+	  if (succ)	succ = _dataModel->saveEigenValues(eigenvalues);
+	  ERROR_LOG_COND("faled to save eigenvalues: "<< eigenvalues, succ);
+
+	  succ = jsonf.readFilePath("eigenvectors", eigenvectors,false);
+	  if (succ)	succ = _dataModel->saveEigenVectors(eigenvectors);
+	  ERROR_LOG_COND("faled to save eigenvectors: "<< eigenvectors, succ);
+	  
+	  succ = jsonf.readFilePath("training_z", training_z,false);
+	  if (succ)	succ = _dataModel->saveRecordZ(training_z);
+	  ERROR_LOG_COND("faled to save training_z: "<< training_z, succ);
+	}
+  }
 }

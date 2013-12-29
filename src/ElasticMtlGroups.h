@@ -51,6 +51,7 @@ namespace SIMULATOR{
 	  return _tetGroups.numGroup();
 	}
 	bool save(const string filename)const;
+	bool saveAsHinp(const string filename)const;
 	bool load(const string filename);
 	void setMaterial(ElasticMaterial<double> &mtl)const;
 	

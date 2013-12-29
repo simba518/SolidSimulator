@@ -26,12 +26,15 @@ namespace SIMULATOR{
 	void createComponents();
 	void createConnections();
 	void paserCommandLine();
+	void loadInitFile(const string filename);
+	~MainWindow();
 
   public slots:
 	void loadInitFile();
 	void saveConNodes();
 	void loadConNodes();
 	void saveElasticMaterial();
+	void saveElasticMaterialHinp();
 	void loadElasticMaterial();
 	void saveRecordZ();
 	void saveEigenValues();
@@ -48,6 +51,9 @@ namespace SIMULATOR{
 	pSimSelectionCtrl _selCtrl;
 	pDataModelRenderCtrl _renderCtrl;
 	pAniCtrl _aniCtrl;
+
+	string init_filename;
+	bool save_all_when_exit;
   };
   
   typedef boost::shared_ptr<MainWindow> pMainWindow;

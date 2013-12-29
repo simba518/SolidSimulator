@@ -22,7 +22,11 @@ namespace SIMULATOR{
 	
   public:
 	Perturbation(pQGLViewerExt viewer,pDataModel dm):_viewer(viewer),_dataModel(dm){
-	  _perturbator.setPerturCompilance(10.0f);
+	  _perturbator.setPerturCompilance(1.0f);
+	}
+	void setPerturCompilance(const double p){
+	  assert_gt(p,0.0);
+	  _perturbator.setPerturCompilance(p);
 	}
 	int totalEleNum ()const{
 	  const pTetMesh_const tetmesh = _dataModel->getVolMesh();
@@ -134,6 +138,10 @@ namespace SIMULATOR{
 		_perturb->setRenderPriority(FIRST_RENDER);
 		view->addSelfRenderEle(_perturb);
 	  }
+	}
+	void setPerturCompilance(const double p){
+	  assert_gt(p,0.0);
+	  if (_perturb)	_perturb->setPerturCompilance(p);
 	}
 
   private:

@@ -1,3 +1,4 @@
+#include <boost/filesystem.hpp> 
 #include "ElasticMtlGroups.h"
 using namespace SIMULATOR;
 
@@ -117,6 +118,58 @@ bool ElasticMtlGroups::save(const string filename)const{
   return true;
 }
 
+// the format used by Barbic's volumetric mesh.
+bool ElasticMtlGroups::saveAsHinp(const string filename)const{
+
+  // save material
+  ofstream out(filename.c_str());
+  if (!out.is_open()){
+	ERROR_LOG("failed to open file for saving: " << filename);
+	return false;
+  }
+  
+  const vector<set<int> > &groups = _tetGroups.getGroup();
+  assert_eq(groups.size(),_rho.size());
+  assert_eq(groups.size(),_E.size());
+  assert_eq(groups.size(),_v.size());
+
+  out << "*HEADING " << "\n";
+  out << "Model: tet mesh\n";
+  out << "*INCLUDE, INPUT=mesh.abq\n";
+  out << "*INCLUDE, INPUT=mesh.elset\n";
+  for (int i = 0; i < groups.size(); ++i){
+	out << "*MATERIAL, NAME="<< "GROUP_"<< i << endl;
+	out << "*ELASTIC\n" << _E[i] << ", "<< _v[i] << endl;
+	out << "*DENSITY\n" << _rho[i] << endl;
+  }
+  for (int i = 0; i < groups.size(); ++i){
+	out << "*SOLID SECTION,MATERIAL="<<"GROUP_"<<i<<",ELSET="<<"GROUP_"<<i<<endl;
+  }
+  out.close();
+
+  // save tetrahedron groups
+  boost::filesystem::path fpath(filename);
+  const string group_file = fpath.parent_path().string()+"//mesh.elset";
+  ofstream out_group(group_file.c_str());
+  if (!out_group.is_open()){
+	ERROR_LOG("failed to open file for saving: " << group_file);
+	return false;
+  }
+
+  for (int i = 0; i < groups.size(); ++i){
+	out_group << "*ELSET, ELSET=GROUP_"<< i << endl;
+	int p = 0;
+	BOOST_FOREACH(const int tet_i, groups[i]){
+	  out_group << tet_i;
+	  p ++;
+	  if (p != groups[i].size()) out_group << ", ";
+	}
+	out_group << endl;
+  }
+
+  return true;
+}
+
 bool ElasticMtlGroups::load(const string filename){
   
   ifstream in(filename.c_str());
@@ -128,38 +181,55 @@ bool ElasticMtlGroups::load(const string filename){
   string tempt;
   int groups_num = 0;
   in >> tempt >> groups_num;
-  assert_gt(groups_num,0);
+  assert_ge(groups_num,0);
 
-  vector<int> num_tets(groups_num);
-  _rho.resize(groups_num);
-  _E.resize(groups_num);
-  _v.resize(groups_num);
+  if (0 == groups_num ){
 
-  for (int i = 0; i < groups_num; ++i){
-	in>>tempt>>tempt>>tempt>>_E[i]>>tempt>>_v[i];
-	in>>tempt>>_rho[i]>>tempt>>num_tets[i];
-	cout << _E[i] << "," << _v[i]<< endl;
-  }
+	_rho.resize(1);
+	_E.resize(1);
+	_v.resize(1);
+	in>>tempt>>tempt>>tempt>>_E[0]>>tempt>>_v[0];
+	in>>tempt>>_rho[0];
 
-  _tetGroups.clear();
-  for (int i = 0; i < num_tets.size(); ++i){
+	INFO_LOG("E,v,rho: "<<_E[0]<<","<<_v[0]<<","<<_rho[0]);
+
+	assert_gt(_elementsNum,0);
+	vector<int> tets(_elementsNum);
+	for (int i = 0; i < _elementsNum; ++i)
+	  tets[i] = i;
+	_tetGroups.addGroup(tets);
+
+  }else{
+	vector<int> num_tets(groups_num);
+	_rho.resize(groups_num);
+	_E.resize(groups_num);
+	_v.resize(groups_num);
+
+	for (int i = 0; i < groups_num; ++i){
+	  in>>tempt>>tempt>>tempt>>_E[i]>>tempt>>_v[i];
+	  in>>tempt>>_rho[i]>>tempt>>num_tets[i];
+	  INFO_LOG("E,v,rho: "<<_E[i]<<","<<_v[i]<<","<<_rho[i]);
+	}
+	_tetGroups.clear();
+	if (num_tets.size() >= 2){
+	  for (int i = 0; i < num_tets.size(); ++i){
 	
-	assert_ge(num_tets.size(),0);
-	vector<int> tets(num_tets[i]);
-	in >> tempt >> tempt;
-	cout << tempt << endl;
-    for (int j = 0;  j < num_tets[i]; ++j){
-	  in >> tets[j];
-	  if(j != num_tets[i]-1){
-	  	in >> tempt;
+		assert_ge(num_tets.size(),0);
+		vector<int> tets(num_tets[i]);
+		in >> tempt >> tempt;
+		for (int j = 0;  j < num_tets[i]; ++j){
+		  in >> tets[j];
+		  if(j != num_tets[i]-1){
+			in >> tempt;
+		  }
+		}
+		_tetGroups.addGroup(tets);
 	  }
 	}
-	_tetGroups.addGroup(tets);
   }
 
-  cout << "total nodes in groups: "<< _tetGroups.numNodes() << endl;
-
-  return true;
+  INFO_LOG("total nodes in groups: "<< _tetGroups.numNodes());
+  return in.good();
 }
 
 void ElasticMtlGroups::setMaterial(ElasticMaterial<double> &mtl)const{
