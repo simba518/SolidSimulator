@@ -14,6 +14,7 @@ void MainWindow::createComponents(){
   _mainwindow.setupUi(this);
   _viewer = _mainwindow.left_view;
   _fileDialog = pFileDialog(new FileDialog(this));	  
+  _viewer->show3DGrid();
 
   // data model	  
   pTetMeshEmbeding embeding = pTetMeshEmbeding(new TetMeshEmbeding());
@@ -106,6 +107,7 @@ void MainWindow::loadInitFile(const string filename){
 
 	bool succ = _volObjCtrl->initialize(filename);
 	succ &= _dataModel->loadSetting(filename);
+	_dataModel->prepareSimulation();
 
 	JsonFilePaser jsonf;
 	jsonf.open(filename);
@@ -198,22 +200,27 @@ MainWindow::~MainWindow(){
 	  succ = jsonf.readFilePath("fixed_nodes", fixed_nodes,false);
 	  if (succ)	succ = _dataModel->saveFixedNodes(fixed_nodes);
 	  ERROR_LOG_COND("faled to save fixed_nodes: "<< fixed_nodes, succ);
+	  INFO_LOG_COND("success to save the fixed nodes: " << fixed_nodes, !succ);
 
 	  succ = jsonf.readFilePath("mesh_hinp", mesh_hinp,false);
 	  if (succ)	succ = _dataModel->saveElasticMaterialHinp(mesh_hinp);
 	  ERROR_LOG_COND("faled to save mesh_hinp: "<< mesh_hinp, succ);
+	  INFO_LOG_COND("success to save mesh_hinp: " << mesh_hinp, !succ);
 
 	  succ = jsonf.readFilePath("eigenvalues", eigenvalues,false);
 	  if (succ)	succ = _dataModel->saveEigenValues(eigenvalues);
 	  ERROR_LOG_COND("faled to save eigenvalues: "<< eigenvalues, succ);
+	  INFO_LOG_COND("success to save eigenvalues: " << eigenvalues, !succ);
 
 	  succ = jsonf.readFilePath("eigenvectors", eigenvectors,false);
 	  if (succ)	succ = _dataModel->saveEigenVectors(eigenvectors);
 	  ERROR_LOG_COND("faled to save eigenvectors: "<< eigenvectors, succ);
+	  INFO_LOG_COND("success to save eigenvectors: " << eigenvectors, !succ);
 	  
 	  succ = jsonf.readFilePath("training_z", training_z,false);
 	  if (succ)	succ = _dataModel->saveRecordZ(training_z);
 	  ERROR_LOG_COND("faled to save training_z: "<< training_z, succ);
+	  INFO_LOG_COND("success to save training_z: "<< training_z, !succ);
 	}
   }
 }

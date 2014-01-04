@@ -30,16 +30,16 @@ namespace SIMULATOR{
 	  if(totalElements != _elementsNum)
 		reset(totalElements);
 	  if(g.size() > 0){
-		if(_tetGroups.addGroup(g).size() > 0)
-		  resetMtl();
+		_tetGroups.addGroup(g);
+		resetMtl();
 	  }
 	}
 	void removeGroup(const vector<int> &g,const int totalElements){
 	  if(totalElements != _elementsNum)
 		reset(totalElements);
 	  if(g.size() > 0){
-		if(_tetGroups.removeGroup(g).size() > 0)
-		  resetMtl();
+		_tetGroups.removeGroup(g);
+		resetMtl();
 	  }
 	}
 	void removeGroup(vector<int> &g)const{

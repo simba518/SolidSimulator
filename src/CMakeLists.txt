@@ -36,12 +36,12 @@ ADD_EXECUTABLE(${APPNAME}
 )
 
 TARGET_LINK_LIBRARIES(${APPNAME}
- 
+
   /usr/local/lib/libutility_ui.a
   /usr/local/lib/libutility_common.a
   /usr/local/lib/libutility_math.a
   /usr/local/lib/libutility_elastic.a
-  
+
   ${QGLViewer_LIBRARIES}
   ${QT_LIBRARIES}
   ${GLEW_LIBRARY}
