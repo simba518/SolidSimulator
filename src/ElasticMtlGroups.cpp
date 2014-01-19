@@ -20,9 +20,10 @@ const double ElasticGroupColors[TOTAL_COLOR_TYPES][3] = {
   1.0,  1.0,  1.0
 };
 
-void ElasticMtlGroups::reset(const int totalElements,const double rho,const double E,const double v){
+void ElasticMtlGroups::reset(const pTetMesh tetmesh,const double rho,
+							 const double E,const double v){
 
-  assert_ge(totalElements,0);
+  assert(tetmesh);
   assert_gt(rho,0.0f);
   assert_gt(E,0.0f);
   assert_in(v,0.0f,0.5f);
@@ -33,45 +34,27 @@ void ElasticMtlGroups::reset(const int totalElements,const double rho,const doub
   _E.push_back(E);
   _v.push_back(v);
 
+  this->tetmesh = tetmesh;
+  _elementsNum = tetmesh->tets().size();
   _tetGroups.clear();
-  vector<int> g(totalElements);
+  vector<int> g(_elementsNum);
   for (size_t i = 0; i < g.size(); ++i)
 	g[i] = i;
   _tetGroups.addGroup(g);
-  _elementsNum = totalElements;
 }
 
 void ElasticMtlGroups::getMtlColors(vector<double> &colors)const{
-	  
+
+  double maxR, minR,  maxE, minE,  maxV, minV;
+  MaxMin(_rho, maxR, minR);
+  MaxMin(_E, maxE, minE);
+  MaxMin(_v, maxV, minV);
   colors.resize(numGroups()*3);
-  double min,max;
-  MaxMin(_rho,min,max);
   for (size_t i = 0; i < _rho.size(); ++i){
-	if (max-min > 0.0f){
-	  colors[i*3+0] = (_rho[i]-min)/(max-min);
-	}else{
-	  colors[i*3+0] = 0.0f;
-	}
+	colors[i*3+0] = (0==maxE-minE)?0:(_E[i]-minE)/(maxE-minE)+0.1f;
+	colors[i*3+1] = (0==maxR-minR)?0:(_rho[i]-minR)/(maxR-minR)+0.1f;
+	colors[i*3+2] = 0.1f;
   }
-
-  MaxMin(_E,min,max);
-  for (size_t i = 0; i < _E.size(); ++i){
-	if (max-min > 0.0f){
-	  colors[i*3+1] = (_E[i]-min)/(max-min);
-	}else{
-	  colors[i*3+1] = 0.0f;
-	}
-  }
-
-  MaxMin(_v,min,max);
-  for (size_t i = 0; i < _v.size(); ++i){
-	if (max-min > 0.0f){
-	  colors[i*3+2] = (_v[i]-min)/(max-min);
-	}else{
-	  colors[i*3+2] = 0.0f;
-	}
-  }
-
 }
 
 void ElasticMtlGroups::getGroupColor(const int gid,double color[3])const{
@@ -136,15 +119,20 @@ bool ElasticMtlGroups::saveAsHinp(const string filename)const{
   out << "*HEADING " << "\n";
   out << "Model: tet mesh\n";
   out << "*INCLUDE, INPUT=mesh.abq\n";
-  out << "*INCLUDE, INPUT=mesh.elset\n";
+  if (groups.size() > 1)
+	out << "*INCLUDE, INPUT=mesh.elset\n";
   for (int i = 0; i < groups.size(); ++i){
 	out << "*MATERIAL, NAME="<< "GROUP_"<< i << endl;
 	out << "*ELASTIC\n" << _E[i] << ", "<< _v[i] << endl;
 	out << "*DENSITY\n" << _rho[i] << endl;
   }
-  for (int i = 0; i < groups.size(); ++i){
-	out << "*SOLID SECTION,MATERIAL="<<"GROUP_"<<i<<",ELSET="<<"GROUP_"<<i<<endl;
+  if (groups.size() > 1){
+	for (int i = 0; i < groups.size(); ++i)
+	  out << "*SOLID SECTION,MATERIAL=GROUP_"<<i<<",ELSET=GROUP_"<<i<<endl;
+  }else{
+	out << "*SOLID SECTION,MATERIAL=GROUP_0,ELSET=EALL"<<endl;
   }
+
   out.close();
 
   // save tetrahedron groups
@@ -228,7 +216,8 @@ bool ElasticMtlGroups::load(const string filename){
 	}
   }
 
-  INFO_LOG("total nodes in groups: "<< _tetGroups.numNodes());
+  INFO_LOG("total tets that are set materail from file: "<< _tetGroups.numNodes());
+  interpolateMaterials();
   return in.good();
 }
 
@@ -249,4 +238,80 @@ void ElasticMtlGroups::setMaterial(ElasticMaterial<double> &mtl)const{
 	  mtl._lambda[tet_i] = G_L[1];
 	}
   }	  
+}
+
+void ElasticMtlGroups::interpolateMaterials(){
+
+  TRACE_FUN();
+  assert(tetmesh);
+  assert_eq(tetmesh->tets().size(),_elementsNum);
+  
+  const vector<set<int> > &groups = _tetGroups.getGroup();
+  assert_ge(groups.size(),1);
+  if (1 == groups.size()){
+	if (_tetGroups.numNodes() != _elementsNum){
+	  reset(tetmesh, _rho[0], _E[0], _v[0]);
+	}
+	return ;
+  }
+  
+  vector<int> tets;
+  for (int i = 0; i < _elementsNum; ++i){
+
+    if (_tetGroups.contain(i))
+	  continue;
+
+	int g1=0, g2=0, t1=0, t2=0;
+	double dis1 = +2e19, dis2 = +2e19;
+	const Vector3d p = tetmesh->getTet(i).center();
+
+	for (int g = 0; g < groups.size(); ++g){
+	  
+	  int t3=0, dis3=+2e19;
+	  BOOST_FOREACH(const int &t, groups[g]){
+		const double d = (p-tetmesh->getTet(t).center()).norm();
+		if (d < dis3){
+		  dis3 = d;
+		  t3 = t;
+		}
+	  }
+	  if (dis3 < dis1){
+		dis2 = dis1;
+		dis1 = dis3;
+		t2 = t1;
+		t1 = t3;
+		g2 = g1;
+		g1 = g;
+	  }else if (dis3 < dis2){
+		dis2 = dis3;
+		t2 = t3;
+		g2 = g;
+	  }
+	}
+	assert_ne(g1,g2);
+	assert_ne(t1,t2);
+	assert_le(dis1,dis2);
+
+	assert_in(g1,0,_E.size()-1);
+	assert_in(g2,0,_E.size()-1);
+	const Vector3d c1 = tetmesh->getTet(t1).center();
+	const Vector3d c2 = tetmesh->getTet(t2).center();
+	const Vector3d c = tetmesh->getTet(i).center();
+	const double d = (c-c1).norm()+(c-c2).norm();
+	assert_gt(d,0);
+	const double x = (c-c1).norm()/d;
+	assert_in(x,0,1);
+
+	_E.push_back( (_E[g2]-_E[g1])*x + _E[g1]);
+	_v.push_back( (_v[g2]-_v[g1])*x + _v[g1]);
+	_rho.push_back( (_rho[g2]-_rho[g1])*x + _rho[g1] );
+
+	tets.push_back(i);
+  }
+
+  for (int i = 0; i < tets.size(); ++i){
+	vector<int> t;
+	t.push_back(tets[i]);
+	_tetGroups.addGroup(t);
+  }
 }

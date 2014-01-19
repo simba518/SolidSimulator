@@ -106,6 +106,7 @@
     <addaction name="actionReset"/>
     <addaction name="actionRecord"/>
     <addaction name="actionClearRecordedZ"/>
+    <addaction name="actionInterpolateMaterials"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuView"/>
@@ -303,6 +304,11 @@
   <action name="actionSaveMaterialAsHinp">
    <property name="text">
     <string>SaveMaterialAsHinp</string>
+   </property>
+  </action>
+  <action name="actionInterpolateMaterials">
+   <property name="text">
+    <string>InterpolateMaterials</string>
    </property>
   </action>
  </widget>

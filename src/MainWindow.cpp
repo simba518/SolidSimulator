@@ -75,6 +75,7 @@ void MainWindow::createConnections(){
   connect(_viewer,SIGNAL(updateAnimation()),_dataModel.get(),SLOT(simulate()));
   connect(_mainwindow.actionPauseSimulation,SIGNAL(triggered()),_viewer,SLOT(pauseAnimation()));
   connect(_mainwindow.actionReset,SIGNAL(triggered()),_dataModel.get(),SLOT(reset()));
+  connect(_mainwindow.actionInterpolateMaterials,SIGNAL(triggered()),_dataModel.get(),SLOT(interpolateMaterials()));
 
   // record
   connect(_mainwindow.actionRecord,SIGNAL(triggered()),_dataModel.get(),SLOT(toggleRecord()));
@@ -218,9 +219,13 @@ MainWindow::~MainWindow(){
 	  INFO_LOG_COND("success to save eigenvectors: " << eigenvectors, !succ);
 	  
 	  succ = jsonf.readFilePath("training_z", training_z,false);
-	  if (succ)	succ = _dataModel->saveRecordZ(training_z);
-	  ERROR_LOG_COND("faled to save training_z: "<< training_z, succ);
-	  INFO_LOG_COND("success to save training_z: "<< training_z, !succ);
+	  if (succ && training_z.size() > 0){
+		succ = _dataModel->saveRecordZ(training_z);
+		ERROR_LOG_COND("faled to save training_z: "<< training_z, succ);
+		INFO_LOG_COND("success to save training_z: "<< training_z, !succ);
+	  }else{
+		INFO_LOG("no training data generated.");
+	  }
 	}
   }
 }

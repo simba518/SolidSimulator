@@ -103,6 +103,7 @@ namespace SIMULATOR{
 	void drawConstraints()const{
 	  const pTetMesh_const tetmesh = _dataModel->getVolMesh();
 	  const set<int> &nodes = _dataModel->getFixedNodes();
+	  glPointSize(20.0f);
 	  node_group_render.draw(tetmesh,nodes,NULL,UTILITY::DRAW_POINT);
 	}
 	void drawTetGroups()const{
@@ -116,7 +117,7 @@ namespace SIMULATOR{
 	  const vector<set<int> > &g = mtlGroup.groups();
 
 	  glDisable(GL_LIGHTING);
-	  glPointSize(4.0f);
+	  glPointSize(20.0f);
 	  for (size_t i = 0; i < g.size(); ++i){
 		double c[3];
 		mtlGroup.getGroupColor(i,c);

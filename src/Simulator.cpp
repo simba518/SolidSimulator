@@ -65,6 +65,9 @@ bool Simulator::precompute(){
   // test Wt*M*W
   const MatrixXd WtMW_I = _W.transpose()*M*_W-MatrixXd::Identity(_W.cols(),_W.cols());
   cout << "(WtMW-I).norm(): " << WtMW_I.norm() << endl;
+  cout << "eigenvalues: " << _lambda.transpose() << endl;
+  cout << "norm(Klower): " << Klower.norm() << endl;
+  cout << "norm(M): " << diagM.norm() << endl;
 
   return succ;
 }

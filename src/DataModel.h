@@ -38,6 +38,7 @@ namespace SIMULATOR{
 		ERROR_LOG("failed to open: " << filename);
 		return false;
 	  }
+	  _mtlGroups.reset(_volObj->getTetMesh());
 
 	  bool succ = true;
 	  string mtlfile;
@@ -173,9 +174,8 @@ namespace SIMULATOR{
 
   public slots:
 	void resetMaterialGroup(){
-	  if(_volObj->getTetMesh()){
-		_mtlGroups.reset(_volObj->getTetMesh()->tets().size());
-	  }
+	  if(_volObj->getTetMesh())
+		_mtlGroups.reset(_volObj->getTetMesh());
 	}
 	void prepareSimulation(){
 
@@ -209,6 +209,9 @@ namespace SIMULATOR{
 	}
 	void clearRecored(){
 	  _recorded_z.clear();
+	}
+	void interpolateMaterials(){
+	  _mtlGroups.interpolateMaterials();
 	}
 	
   private:

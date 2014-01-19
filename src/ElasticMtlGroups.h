@@ -18,7 +18,7 @@ namespace SIMULATOR{
 	ElasticMtlGroups(){
 	  _elementsNum = 0;
 	}
-	void reset(const int totalElements,
+	void reset(const pTetMesh tetmesh,
 			   const double rho=DEFULT_DENSITY,
 			   const double E=DEFULT_YOUNG,
 			   const double v=DEFULT_POSSION);
@@ -27,16 +27,16 @@ namespace SIMULATOR{
 	const vector<double> &possion()const{ return _v;}
 	const vector<set<int> > &groups()const{ return _tetGroups.getGroup();}
 	void addGroup(const vector<int> &g,const int totalElements){
-	  if(totalElements != _elementsNum)
-		reset(totalElements);
+	  assert(totalElements == _elementsNum);
+	  // reset(tetmesh);
 	  if(g.size() > 0){
 		_tetGroups.addGroup(g);
 		resetMtl();
 	  }
 	}
 	void removeGroup(const vector<int> &g,const int totalElements){
-	  if(totalElements != _elementsNum)
-		reset(totalElements);
+	  assert(totalElements == _elementsNum);
+	  // reset(tetmesh);
 	  if(g.size() > 0){
 		_tetGroups.removeGroup(g);
 		resetMtl();
@@ -54,6 +54,7 @@ namespace SIMULATOR{
 	bool saveAsHinp(const string filename)const;
 	bool load(const string filename);
 	void setMaterial(ElasticMaterial<double> &mtl)const;
+	void interpolateMaterials();
 	
   protected:
 	void MaxMin(const vector<double> &v, double &max,double &min)const{
@@ -70,6 +71,7 @@ namespace SIMULATOR{
 	}
 	
   private:
+	pTetMesh tetmesh;
 	int _elementsNum;
 	vector<double> _rho; // Density
 	vector<double> _E; // Young's modulus.
