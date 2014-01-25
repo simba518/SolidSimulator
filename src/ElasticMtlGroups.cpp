@@ -262,12 +262,12 @@ void ElasticMtlGroups::interpolateMaterials(){
 	  continue;
 
 	int g1=0, g2=0, t1=0, t2=0;
-	double dis1 = +2e19, dis2 = +2e19;
+	double dis1 = +1e19, dis2 = +1e19;
 	const Vector3d p = tetmesh->getTet(i).center();
 
 	for (int g = 0; g < groups.size(); ++g){
 	  
-	  int t3=0, dis3=+2e19;
+	  double t3=0, dis3 = +1e19;
 	  BOOST_FOREACH(const int &t, groups[g]){
 		const double d = (p-tetmesh->getTet(t).center()).norm();
 		if (d < dis3){
