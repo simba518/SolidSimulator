@@ -70,6 +70,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 INCLUDE_DIRECTORIES(
   /usr/local/include/utility
+  ${PROJECT_SOURCE_DIR}/src/simulator
 )
 
 # projects
