@@ -38,7 +38,7 @@ namespace SIMULATOR{
 	  simulator->reset();
 	}
 
-	void setConNodes(const set<int> &nodes){
+	void setConNodes(const vector<int> &nodes){
 
 	  if (nodes.size() <= 0){
 		removeAllConNodes();

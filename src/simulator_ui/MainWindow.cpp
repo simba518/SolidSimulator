@@ -103,12 +103,12 @@ void MainWindow::saveConNodes(){
 
   const string fname = _fileDialog->save();
   if(fname.size() >0)
-	_fileDialog->warning(_dataModel->saveFixedNodes(fname));
+	_fileDialog->warning(_dataModel->saveConNodes(fname));
 }
 
 void MainWindow::loadConNodes(){
 
   const string fname = _fileDialog->load();
   if(fname.size() >0)
-	_fileDialog->warning(_dataModel->loadFixedNodes(fname));
+	_fileDialog->warning(_dataModel->loadConNodes(fname));
 }

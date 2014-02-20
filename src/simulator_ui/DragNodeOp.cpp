@@ -63,8 +63,9 @@ void DragNodeOp::startDrag (double x,double y,double z){
 }
 
 void DragNodeOp::dragTo(double x,double y,double z){
-
+  
   if(data_model){
+
 	double disp[3];
 	disp[0] = x-initial_dragged_point[0];
 	disp[1] = y-initial_dragged_point[1];

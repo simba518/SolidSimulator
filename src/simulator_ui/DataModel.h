@@ -33,23 +33,18 @@ namespace SIMULATOR{
 	bool loadSetting(const string filename);
 
 	// set fixed nodes
-	void addFixedNodes(const vector<int> &sel_ids){
-	  for (size_t i = 0; i < sel_ids.size(); ++i){
-		assert_ge(sel_ids[i],0);
-		_fixedNodes.insert(sel_ids[i]);
-	  }
+	void addConNodes(const vector<int> &sel_ids){
+	  _partialCon.addConNodes(sel_ids);
+	  resetPartialCon();
 	}
-	void removeFixedNodes(const vector<int> &sel_ids){
-	  for (size_t i = 0; i < sel_ids.size(); ++i){
-		_fixedNodes.erase(sel_ids[i]);
-	  }
+	void removeConNodes(const vector<int> &sel_ids){
+	  _partialCon.rmConNodes(sel_ids);
+	  resetPartialCon();
 	}
 	const vector<set<int> > &getConNodes()const{
 	  return _partialCon.getConNodesSet();
 	}
-	void updateUc(const Matrix<double,3,-1> &uc,const int group_id){
-	  _partialCon.updatePc(uc,group_id);
-	}
+	void updateUc(const Matrix<double,3,-1> &uc,const int group_id);
 
 	// perturbation
 	void setForces(const int nodeId,const double force[3]);
@@ -61,20 +56,18 @@ namespace SIMULATOR{
 	const pTetMesh_const getVolMesh()const{
 	  return _volObj->getTetMesh();
 	}
-	const set<int> &getFixedNodes()const{
-	  return _fixedNodes;
-	}
 	const VectorXd &getU()const{
 	  assert(_simulator);
 	  return _simulator->getFullDisp();
 	}
 	const Matrix<double,3,-1> getUc(const int group)const{
+	  assert_in(group,0,_partialCon.numGroup()-1);
 	  return _partialCon.getPc(group);
 	}
 
 	// io
-	bool saveFixedNodes(const string filename)const;
-	bool loadFixedNodes(const string filename);
+	bool saveConNodes(const string filename)const;
+	bool loadConNodes(const string filename);
 	void print()const{}
 
   public slots:
@@ -83,12 +76,15 @@ namespace SIMULATOR{
 	void reset(){
 	  if(_simulator) _simulator->reset();
 	}
+
+  protected:
+	void resetPartialCon();
+	void getSubUc(const vector<set<int> > &groups,const VectorXd &full_u,Matrix<double,3,-1> &sub_u)const;
 	
   private:
 	PartialConstraints _partialCon;
 	pSimulator _simulator;
 	pTetMeshEmbeding _volObj;
-	set<int> _fixedNodes;
   };
   
   typedef boost::shared_ptr<DataModel> pDataModel;

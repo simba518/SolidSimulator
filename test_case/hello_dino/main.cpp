@@ -40,12 +40,8 @@ int main(int argc, char *argv[]){
 	succ = jsonf.readVecFile("fixed_nodes", nodes,UTILITY::TEXT);
 	cout << "num of fixed nodes: " << nodes.size() << endl;
 	assert(succ);
-	set<int> nodes_set;
-	for (int i = 0; i < nodes.size(); ++i){
-	  nodes_set.insert(nodes[i]);
-	}
-	simulator->setConNodes(nodes_set);
-	VectorXd uc(nodes_set.size()*3);
+	simulator->setConNodes(nodes);
+	VectorXd uc(nodes.size()*3);
 	uc.setZero();	
 	simulator->setUc(uc);
   }

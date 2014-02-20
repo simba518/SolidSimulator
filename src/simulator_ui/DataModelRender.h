@@ -91,10 +91,15 @@ namespace SIMULATOR{
 	  }
 	}
 	void drawConstraints()const{
+
 	  const pTetMesh_const tetmesh = _dataModel->getVolMesh();
-	  const set<int> &nodes = _dataModel->getFixedNodes();
-	  glPointSize(20.0f);
-	  node_group_render.draw(tetmesh,nodes,NULL,UTILITY::DRAW_POINT);
+	  if (tetmesh){
+		const vector<set<int> > &nodes = _dataModel->getConNodes();
+		const VectorXd &vol_u = _dataModel->getU();
+		glPointSize(20.0f);
+		if (vol_u.size() >= 3)
+		  node_group_render.draw(tetmesh, nodes,&vol_u[0],UTILITY::DRAW_POINT);
+	  }
 	}
 	
   private:

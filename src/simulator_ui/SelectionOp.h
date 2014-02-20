@@ -25,21 +25,22 @@ namespace SIMULATOR{
 	void drawWithNames ()const{
 	  pTetMesh_const tetmesh = _dataModel->getVolMesh();
 	  assert(tetmesh);
+	  const VectorXd &vol_u = _dataModel->getU();
 	  glFlush();
 	  for (int i=0; i<tetmesh->nodes().size(); i++){
 		const Vector3d &v = tetmesh->nodes()[i];
 		glPushName(i);
 		glBegin(GL_POINTS);
-		glVertex3d(v[0], v[1], v[2]);
+		glVertex3d(v[0]+vol_u[i*3+0], v[1]+vol_u[i*3+1], v[2]+vol_u[i*3+2]);
 		glEnd();
 		glPopName();
 	  }
 	}
 	void addSelection(const vector<int> &sel_ids){
-	  _dataModel->addFixedNodes(sel_ids);
+	  _dataModel->addConNodes(sel_ids);
 	}
 	void removeSelection(const vector<int> &sel_ids){
-	  _dataModel->removeFixedNodes(sel_ids);
+	  _dataModel->removeConNodes(sel_ids);
 	}
 	
   private:

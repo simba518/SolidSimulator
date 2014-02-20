@@ -46,10 +46,10 @@ bool DataModel::loadSetting(const string filename){
 	}
   }
 
-  string fixed_node_file;
-  if (jsonf.readFilePath("fixed_nodes", fixed_node_file)){
-	succ &= loadFixedNodes(fixed_node_file);
-  }
+  // string fixed_node_file;
+  // if (jsonf.readFilePath("fixed_nodes", fixed_node_file)){
+  // 	succ &= loadFixedNodes(fixed_node_file);
+  // }
 	  
   if (_simulator){
 	succ &= _simulator->init(filename);
@@ -59,44 +59,44 @@ bool DataModel::loadSetting(const string filename){
   return succ;
 }
 
-bool DataModel::saveFixedNodes(const string filename)const{
+bool DataModel::saveConNodes(const string filename)const{
 
-  OUTFILE(outf,filename.c_str());
-  if(!outf.is_open()) return false;
-  outf << _fixedNodes.size() << "\n";
-  BOOST_FOREACH(const int ele, _fixedNodes){
-	outf << ele << " ";
-  }
-  const bool succ = outf.good();
-  outf.close();
-  return succ;
+  // OUTFILE(outf,filename.c_str());
+  // if(!outf.is_open()) return false;
+  // outf << _fixedNodes.size() << "\n";
+  // BOOST_FOREACH(const int ele, _fixedNodes){
+  // 	outf << ele << " ";
+  // }
+  // const bool succ = outf.good();
+  // outf.close();
+  // return succ;
 }
 
-bool DataModel::loadFixedNodes(const string filename){
+bool DataModel::loadConNodes(const string filename){
 	  
-  INFILE(in,filename.c_str());
-  if(!in.is_open()) return false;
+  // INFILE(in,filename.c_str());
+  // if(!in.is_open()) return false;
 
-  bool succ = false;
-  int len = 0;
-  in >> len;
-  if (len > 0){
+  // bool succ = false;
+  // int len = 0;
+  // in >> len;
+  // if (len > 0){
 
-	succ = true;
-	_fixedNodes.clear();
-	for (int i = 0; i < len; ++i){
+  // 	succ = true;
+  // 	_fixedNodes.clear();
+  // 	for (int i = 0; i < len; ++i){
 
-	  int nodeid = 0;
-	  in >> nodeid;
-	  if (nodeid >= 0){
-		_fixedNodes.insert(nodeid);
-	  }else{
-		succ = false;
-		ERROR_LOG("the fixed node's id is invalid: " << nodeid);
-	  }
-	}
-  }
-  return succ;
+  // 	  int nodeid = 0;
+  // 	  in >> nodeid;
+  // 	  if (nodeid >= 0){
+  // 		_fixedNodes.insert(nodeid);
+  // 	  }else{
+  // 		succ = false;
+  // 		ERROR_LOG("the fixed node's id is invalid: " << nodeid);
+  // 	  }
+  // 	}
+  // }
+  // return succ;
 }
 
 void DataModel::prepareSimulation(){
@@ -106,10 +106,10 @@ void DataModel::prepareSimulation(){
 	const bool succ = _simulator->precompute();
 	ERROR_LOG_COND("the precomputation is failed.",succ);
 
-	_simulator->setConNodes(_fixedNodes);
-	VectorXd uc(_fixedNodes.size()*3);
-	uc.setZero();
-	_simulator->setUc(uc);
+	// _simulator->setConNodes(_fixedNodes);
+	// VectorXd uc(_fixedNodes.size()*3);
+	// uc.setZero();
+	// _simulator->setUc(uc);
   }
 }
 
@@ -148,4 +148,42 @@ bool DataModel::simulate(){
   }
   
   return succ;
+}
+
+void DataModel::getSubUc(const vector<set<int> > &groups,const VectorXd &full_u,Matrix<double,3,-1> &sub_u)const{
+
+  int nodes = 0;
+  BOOST_FOREACH(const set<int>& s, groups)
+	nodes += s.size();
+
+  sub_u.resize(3,nodes);
+  int index = 0;
+  BOOST_FOREACH(const set<int>& s, groups){
+	BOOST_FOREACH(const int i, s){
+	  assert_in(i*3,0,full_u.size()-3);
+	  sub_u.col(index) = full_u.segment<3>(i*3);
+	  index++;
+	}
+  }
+}
+
+void DataModel::updateUc(const Matrix<double,3,-1> &uc,const int group_id){
+
+  _partialCon.updatePc(uc,group_id);
+  if(uc.size() > 0){
+	const int n = _partialCon.getPc().size();
+	_simulator->setUc(Map<VectorXd>(const_cast<double*>(&(_partialCon.getPc()(0,0))),n));
+  }
+}
+
+void DataModel::resetPartialCon(){
+
+  Matrix<double,3,-1> pc;
+  getSubUc(_partialCon.getConNodesSet(),getU(),pc);
+  _partialCon.updatePc(pc);
+  static vector<int> con_nodes;
+  static VectorXd con_uc;
+  _partialCon.getPartialCon(con_nodes, con_uc);
+  _simulator->setConNodes(con_nodes);
+  _simulator->setUc(con_uc);
 }

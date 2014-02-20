@@ -26,7 +26,7 @@ namespace SIMULATOR{
 	virtual bool precompute(){}
 	virtual void reset() = 0;
 
-	virtual void setConNodes(const set<int> &con_nodes) = 0;
+	virtual void setConNodes(const vector<int> &con_nodes) = 0;
 	virtual void setUc(const VectorXd &uc) = 0;
 	virtual void removeAllConNodes() = 0;
 

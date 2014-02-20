@@ -50,13 +50,8 @@ namespace SIMULATOR{
 	  }
 	}
 
-	void setConNodes(const set<int> &nodes){
-	  vector<int> con_nodes;
-	  con_nodes.reserve(nodes.size());
-	  BOOST_FOREACH(const int ele, nodes){
-		con_nodes.push_back(ele);
-	  }
-	  simulator->setConGroups(con_nodes);
+	void setConNodes(const vector<int> &nodes){
+	  simulator->setConGroups(nodes);
 	}
 	void setUc(const VectorXd &uc){
 	  simulator->setUc(uc);
