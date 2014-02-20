@@ -123,33 +123,6 @@ void DataModel::setForces(const int nodeId,const double force[3]){
   }
 }
 
-bool DataModel::simulate(){
-
-  bool succ = false;
-  if(_simulator){
-	succ = _simulator->forward();
-  }
-
-  { // recording.
-	// static vector<VectorXd> record_u, record_f;
-	// static int i = 0;
-	// i ++;
-	// cout << i  << endl;
-	// if (i < 500){
-	//   record_u.push_back(getU());
-	//   static VectorXd f;
-	//   _simulator->computeElasticForce(getU(), f);
-	//   record_f.push_back(f);
-	// }else{
-	//   EIGEN3EXT::write("training_u.b", record_u);
-	//   EIGEN3EXT::write("training_f.b", record_f);
-	//   exit(0);
-	// }
-  }
-  
-  return succ;
-}
-
 void DataModel::getSubUc(const vector<set<int> > &groups,const VectorXd &full_u,Matrix<double,3,-1> &sub_u)const{
 
   int nodes = 0;
@@ -186,4 +159,31 @@ void DataModel::resetPartialCon(){
   _partialCon.getPartialCon(con_nodes, con_uc);
   _simulator->setConNodes(con_nodes);
   _simulator->setUc(con_uc);
+}
+
+bool DataModel::simulate(){
+
+  bool succ = false;
+  if(_simulator){
+	succ = _simulator->forward();
+  }
+
+  { // recording.
+	static vector<VectorXd> record_u, record_f;
+	static int i = 0;
+	i ++;
+	cout << i  << endl;
+	if (i < 300){
+	  record_u.push_back(getU());
+	  static VectorXd f;
+	  _simulator->computeElasticForce(getU(), f);
+	  record_f.push_back(f);
+	}else{
+	  EIGEN3EXT::write("training_u.b", record_u);
+	  EIGEN3EXT::write("training_f.b", record_f);
+	  exit(0);
+	}
+  }
+  
+  return succ;
 }

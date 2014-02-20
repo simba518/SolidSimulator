@@ -17,6 +17,7 @@ namespace SIMULATOR{
   public:
 	SubspaceSimulator(){
 	  stvkModel = pReducedElasticModel(new DirectReductionElasticModel());
+	  // stvkModel = pReducedElasticModel(new CubaturedElasticModel());
 	  simulator = pReducedSimulator(new ReducedImpLogConSimulator(stvkModel));
 	}
 	string name()const{
@@ -87,6 +88,17 @@ namespace SIMULATOR{
 
 	const VectorXd &getFullDisp()const{
 	  return full_disp;
+	}
+	bool computeElasticForce(const VectorXd &u,VectorXd &f)const{
+	  bool succ = false;
+	  if (stvkModel){
+		const MatrixXd &B = stvkModel->getModalBasis();
+		const VectorXd q = B.transpose()*u;
+		VectorXd fq;
+		succ = stvkModel->evaluateF(q,fq);
+		f = B*fq;
+	  }
+	  return succ;
 	}
 
   private:
