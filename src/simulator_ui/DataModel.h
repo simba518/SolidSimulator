@@ -45,12 +45,7 @@ namespace SIMULATOR{
 	}
 
 	// perturbation
-	void setForces(const int nodeId,const double force[3]){
-	  if(_simulator){
-		_simulator->setExtForces(nodeId,force);
-		this->simulate();
-	  }
-	}
+	void setForces(const int nodeId,const double force[3]);
 
 	// get data
 	const pObjmesh_const getObjMesh()const{
@@ -74,11 +69,7 @@ namespace SIMULATOR{
 
   public slots:
 	void prepareSimulation();
-	bool simulate(){
-	  if(_simulator)
-		return _simulator->forward();
-	  return false;
-	}
+	bool simulate();
 	void reset(){
 	  if(_simulator) _simulator->reset();
 	}

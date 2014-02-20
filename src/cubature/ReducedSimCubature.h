@@ -16,11 +16,12 @@ namespace CUBATURE{
   class ReducedSimCubature:public GreedyCubop{
 	
   public:
-	ReducedSimCubature(const MatrixXd &B,pTetMesh_const tet_mesh):B(B),tet_mesh(tet_mesh){
+	ReducedSimCubature(const MatrixXd &B,pTetMesh_const tet):B(B),tet_mesh(tet){
 	  assert(tet_mesh);
 	  assert_eq(B.rows(), tet_mesh->nodes().size()*3);
 	  tet_mesh->nodes(rest_shape);
 	  fullStVKModel = pElasticForceTetFullStVK(new ElasticForceTetFullStVK(tet_mesh));
+	  fullStVKModel->prepare();
 	}
 	void run(const MatrixXd &training_full_disp,
 			 const MatrixXd &training_full_forces,
@@ -74,15 +75,20 @@ namespace CUBATURE{
 	void evalPointForceDensity(int tet_id, VECTOR& q,VECTOR& gOut){
 	  
 	  assert_in(tet_id, 0, numTotalPoints()-1);
-	  const VectorXd x = rest_shape+B*Map<VectorXd>(q.data(),q.size());
-
+	  VectorXd x = rest_shape;
+	  const VectorXd &qe = Map<VectorXd>(q.data(),q.size());
+	  for (int j = 0;  j < 4; ++j){
+		const int vi = tet_mesh->tets()[tet_id][j];
+		x.segment<3>(vi*3) += B.block(3*vi,0,3,B.cols())*qe;
+	  }
+	  
 	  static mat3x4 f_tet;
 	  fullStVKModel->force_tet(f_tet, tet_id, x);
 	  VectorXd f(q.size());
 	  f.setZero();
 	  for (int j = 0;  j < 4; ++j){
 		const int vi = tet_mesh->tets()[tet_id][j];
-		f += B.block(3*vi,0,3,B.cols()).transpose()*((-1.0)*f_tet.col(j));
+		f -= B.block(3*vi,0,3,B.cols()).transpose()*(f_tet.col(j));
 	  }
 
 	  memcpy(gOut.data(), &f[0], sizeof(double)*f.size());
@@ -92,7 +98,7 @@ namespace CUBATURE{
 	  assert_ge(relErr,0);
 	  this->selectedTets = selectedTets;
 	  this->weights = Map<VectorXd>(weights.data(), weights.size());
-	  INFO_LOG("relative error of the cubature is: " <<relErr);
+	  GreedyCubop::handleCubature(selectedTets,weights, relErr);
 	}
 
   private:

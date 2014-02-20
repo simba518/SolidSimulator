@@ -72,12 +72,12 @@ int main(int argc, char *argv[]){
   INFO_LOG("running cubature....");
   ReducedSimCubature cuba(B, tet_mesh);
   cuba.run(training_full_disp, 
-		   training_full_forces, 
-		   rel_err_tol, 
-		   max_points, 
-		   cands_per_iter, 
-		   iters_per_full_nnls, 
-		   samples_per_subtrain);
+  		   training_full_forces, 
+  		   rel_err_tol, 
+  		   max_points, 
+  		   cands_per_iter, 
+  		   iters_per_full_nnls, 
+  		   samples_per_subtrain);
 
   // save cubature
   string save_points;

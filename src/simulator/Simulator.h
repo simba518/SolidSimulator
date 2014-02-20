@@ -30,12 +30,16 @@ namespace SIMULATOR{
 	virtual void setUc(const VectorXd &uc) = 0;
 	virtual void removeAllConNodes() = 0;
 
-	virtual void setExtForces(const int nodeId,const double f[3]) = 0;
-	virtual void clearExtForces() = 0;
+	virtual void setExtForceOfNode(const int nodeId,const double f[3]) = 0;
+	virtual void setExtForce(const VectorXd &f_ext) = 0;
+	virtual void clearExtForce() = 0;
 
 	virtual bool forward() = 0;
 
 	virtual const VectorXd &getFullDisp()const = 0;
+	virtual bool computeElasticForce(const VectorXd &u,VectorXd &f)const{
+	  return false;
+	}
 
   };
   typedef boost::shared_ptr<Simulator> pSimulator;

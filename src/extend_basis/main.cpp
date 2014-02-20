@@ -46,6 +46,7 @@ int main(int argc, char *argv[]){
   /// compute full K, M
   INFO_LOG("computing full K, M....");
   ElasticForceTetFullStVK ela(tet_mesh);
+  ela.prepare();
   VectorXd x0;
   tet_mesh->nodes(x0);
   SparseMatrix<double> K = ela.K(x0)*(-1.0f);

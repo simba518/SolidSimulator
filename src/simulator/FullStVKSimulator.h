@@ -33,12 +33,17 @@ namespace SIMULATOR{
 	  return simulator->prepare();
 	}
 	void reset(){
-	  clearExtForces();
+	  clearExtForce();
 	  removeAllConNodes();
 	  simulator->reset();
 	}
 
 	void setConNodes(const set<int> &nodes){
+
+	  if (nodes.size() <= 0){
+		removeAllConNodes();
+		return;
+	  }
 
 	  const int n = stvkModel->dimension()/3;
 	  if (n > 0){
@@ -54,10 +59,13 @@ namespace SIMULATOR{
 	  simulator->removeAllCon();
 	}
 	
-	void setExtForces(const int nodeId,const double f[3]){
+	void setExtForceOfNode(const int nodeId,const double f[3]){
 	  simulator->setExtForceOfNode(f, nodeId);
 	}
-	void clearExtForces(){
+	void setExtForce(const VectorXd &f_ext){
+	  simulator->setExtForce(f_ext);
+	}
+	void clearExtForce(){
 	  simulator->setExtForceForAllNodes(0.0f,0.0f,0.0f);
 	}
 
@@ -67,6 +75,11 @@ namespace SIMULATOR{
 
 	const VectorXd &getFullDisp()const{
 	  return simulator->getU();
+	}
+	bool computeElasticForce(const VectorXd &u,VectorXd &f)const{
+	  if (stvkModel)
+		return stvkModel->evaluateF(u,f);
+	  return false;
 	}
 	
   private:

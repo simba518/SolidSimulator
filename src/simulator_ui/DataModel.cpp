@@ -1,6 +1,7 @@
 #include "DataModel.h"
-#include <CubatureSimulator.h>
+#include <SubspaceSimulator.h>
 #include <FullStVKSimulator.h>
+#include <MatrixIO.h>
 using namespace SIMULATOR;
 
 DataModel::DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
@@ -18,8 +19,8 @@ pSimulator DataModel::createSimulator(const string filename)const{
   }
 
   pSimulator sim;
-  if ("cubature" == simulator_name){
-	sim = pSimulator(new CubatureSimulator());
+  if ("subspace" == simulator_name){
+	sim = pSimulator(new SubspaceSimulator());
   }else{
 	sim = pSimulator(new FullStVKSimulator());
   }
@@ -110,4 +111,41 @@ void DataModel::prepareSimulation(){
 	uc.setZero();
 	_simulator->setUc(uc);
   }
+}
+
+void DataModel::setForces(const int nodeId,const double force[3]){
+
+  if(_simulator){
+	_simulator->setExtForceOfNode(nodeId,force);
+	this->simulate();
+	// cout<< "i = " << nodeId << endl;
+	// cout<< "force = (" << force[0] << ", " << force[1] << ", "<<force[2] << ")" << endl;
+  }
+}
+
+bool DataModel::simulate(){
+
+  bool succ = false;
+  if(_simulator){
+	succ = _simulator->forward();
+  }
+
+  { // recording.
+	// static vector<VectorXd> record_u, record_f;
+	// static int i = 0;
+	// i ++;
+	// cout << i  << endl;
+	// if (i < 500){
+	//   record_u.push_back(getU());
+	//   static VectorXd f;
+	//   _simulator->computeElasticForce(getU(), f);
+	//   record_f.push_back(f);
+	// }else{
+	//   EIGEN3EXT::write("training_u.b", record_u);
+	//   EIGEN3EXT::write("training_f.b", record_f);
+	//   exit(0);
+	// }
+  }
+  
+  return succ;
 }

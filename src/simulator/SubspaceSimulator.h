@@ -1,5 +1,5 @@
-#ifndef _CUBATURESIMULATOR_H_
-#define _CUBATURESIMULATOR_H_
+#ifndef _SUBSPACESIMULATOR_H_
+#define _SUBSPACESIMULATOR_H_
 
 #include "Simulator.h"
 #include <ReducedSimulator.h>
@@ -9,18 +9,18 @@ using namespace UTILITY;
 namespace SIMULATOR{
   
   /**
-   * @class CubatureSimulator solid simulation using cubature method.
+   * @class SubspaceSimulator solid simulation using cubature method.
    * 
    */
-  class CubatureSimulator:public Simulator{
+  class SubspaceSimulator:public Simulator{
 	
   public:
-	CubatureSimulator(){
-	  stvkModel = pCubaturedElasticModel(new CubaturedElasticModel());
+	SubspaceSimulator(){
+	  stvkModel = pReducedElasticModel(new DirectReductionElasticModel());
 	  simulator = pReducedSimulator(new ReducedImpLogConSimulator(stvkModel));
 	}
 	string name()const{
-	  return "cubature";
+	  return "subspace";
 	}
 	bool init(const string filename){
 	  bool succ = stvkModel->init(filename);
@@ -33,12 +33,21 @@ namespace SIMULATOR{
 	  stvkModel->setVolMesh(tetMesh);
 	}
 	bool precompute(){
-	  return simulator->prepare();
+	  const bool succ = simulator->prepare();
+	  if (stvkModel){
+		full_disp.resize(stvkModel->fullDim());
+		full_disp.setZero();
+	  }
+	  return succ;
 	}
 	void reset(){
-	  clearExtForces();
+	  clearExtForce();
 	  removeAllConNodes();
 	  simulator->reset();
+	  if (stvkModel){
+		full_disp.resize(stvkModel->fullDim());
+		full_disp.setZero();
+	  }
 	}
 
 	void setConNodes(const set<int> &nodes){
@@ -56,7 +65,7 @@ namespace SIMULATOR{
 	  simulator->removeAllCon();
 	}
 	
-	void setExtForces(const int node_id,const double f[3]){
+	void setExtForceOfNode(const int node_id,const double f[3]){
 
 	  static VectorXd full_ext;
 	  full_ext.resize(stvkModel->fullDim());
@@ -66,7 +75,10 @@ namespace SIMULATOR{
 	  full_ext[node_id*3+2] = f[2];
 	  simulator->setExtForce(full_ext);
 	}
-	void clearExtForces(){
+	void setExtForce(const VectorXd &f_ext){
+	  simulator->setExtForce(f_ext);
+	}
+	void clearExtForce(){
 	  VectorXd full_ext(stvkModel->fullDim());
 	  full_ext.setZero();
 	  simulator->setExtForce(full_ext);
@@ -83,13 +95,13 @@ namespace SIMULATOR{
 	}
 
   private:
-	pCubaturedElasticModel stvkModel;
+	pReducedElasticModel stvkModel;
 	pReducedSimulator simulator;
 	VectorXd full_disp;
   };
   
-  typedef boost::shared_ptr<CubatureSimulator> pCubatureSimulator;
+  typedef boost::shared_ptr<SubspaceSimulator> pSubspaceSimulator;
   
 }//end of namespace
 
-#endif /*_CUBATURESIMULATOR_H_*/
+#endif /* _SUBSPACESIMULATOR_H_ */
