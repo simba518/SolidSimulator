@@ -18,8 +18,12 @@ namespace SIMULATOR{
   class Simulator{
 	
   public:
+	virtual string name()const{
+	  return "un-known-simulator";
+	}
 	virtual bool init(const string filename) = 0;
 	virtual void setVolMesh(pTetMesh_const tetMesh) = 0;
+	virtual bool precompute(){}
 	virtual void reset() = 0;
 
 	virtual void setConNodes(const set<int> &con_nodes) = 0;
@@ -29,7 +33,6 @@ namespace SIMULATOR{
 	virtual void setExtForces(const int nodeId,const double f[3]) = 0;
 	virtual void clearExtForces() = 0;
 
-	virtual bool precompute(){}
 	virtual bool forward() = 0;
 
 	virtual const VectorXd &getFullDisp()const = 0;

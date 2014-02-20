@@ -5,6 +5,7 @@ SET(NONE_QT_CPP
 )
 
 SET(UI_SOURCES
+  DataModel.cpp
   MainWindow.cpp  
 )
 
@@ -40,6 +41,7 @@ TARGET_LINK_LIBRARIES(${APPNAME}
   /usr/local/lib/libutility_common.a
   /usr/local/lib/libutility_math.a
   /usr/local/lib/libutility_elastic.a
+  /usr/local/lib/libutility_elastic_reduced.a
 
   ${QGLViewer_LIBRARIES}
   ${QT_LIBRARIES}
@@ -48,6 +50,8 @@ TARGET_LINK_LIBRARIES(${APPNAME}
   ${Boost_LIBRARIES}
 
   ${ARPACK_LIBRARIES}
+  ${SUITESPARSE_LIBRARIES}
   ${SUPERLU2.0_LIBRARIES}
-  /usr/lib/libblas.a
+  /usr/lib/libblas.so
+  # /usr/lib/libblas.a
 )

@@ -50,5 +50,6 @@ TARGET_LINK_LIBRARIES(${APPNAME}
 
   ${ARPACK_LIBRARIES}
   ${SUPERLU2.0_LIBRARIES}
-  /usr/lib/libblas.a
+  # /usr/lib/libblas.a
+  /usr/lib/libblas.so
 )

@@ -8,8 +8,7 @@
 #include <MatrixIO.h>
 #include <TetMeshEmbeding.h>
 #include <JsonFilePaser.h>
-#include <MASimulator.h>
-#include <FullStVKSimulator.h>
+#include <Simulator.h>
 using namespace std;
 using namespace UTILITY;
 
@@ -24,38 +23,13 @@ namespace SIMULATOR{
 	Q_OBJECT
 
   public:
-	DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
-	  assert(embeding);
-	  _simulator = pSimulator(new MASimulator());
+	DataModel(pTetMeshEmbeding embeding);
+	const string simulatorName()const{
+	  if (_simulator) return _simulator->name();
+	  return "no simulator.";
 	}
-	bool loadSetting(const string filename){
-
-	  JsonFilePaser jsonf;
-	  if (!jsonf.open(filename)){
-		ERROR_LOG("failed to open: " << filename);
-		return false;
-	  }
-
-	  bool succ = true;
-	  string mtlfile;
-	  if (jsonf.readFilePath("elastic_mtl",mtlfile)){
-		if (_volObj && _volObj->getTetMesh()){
-		  succ = _volObj->getTetMesh()->loadElasticMtl(mtlfile);
-		}
-	  }
-
-	  string fixed_node_file;
-	  if (jsonf.readFilePath("fixed_nodes", fixed_node_file)){
-		succ &= loadFixedNodes(fixed_node_file);
-	  }
-	  
-	  if (_simulator){
-		succ &= _simulator->init(filename);
-	  }
-
-	  print();
-	  return succ;
-	}
+	pSimulator createSimulator(const string filename)const;
+	bool loadSetting(const string filename);
 
 	// set fixed nodes
 	void addFixedNodes(const vector<int> &sel_ids){
@@ -94,55 +68,12 @@ namespace SIMULATOR{
 	}
 
 	// io
-	bool saveFixedNodes(const string filename)const{
-
-	  OUTFILE(outf,filename.c_str());
-	  if(!outf.is_open()) return false;
-	  outf << _fixedNodes.size() << "\n";
-	  BOOST_FOREACH(const int ele, _fixedNodes){
-		outf << ele << " ";
-	  }
-	  const bool succ = outf.good();
-	  outf.close();
-	  return succ;
-	}
-	bool loadFixedNodes(const string filename){
-	  
-	  INFILE(in,filename.c_str());
-	  if(!in.is_open()) return false;
-
-	  bool succ = false;
-	  int len = 0;
-	  in >> len;
-	  if (len > 0){
-
-		succ = true;
-		_fixedNodes.clear();
-		for (int i = 0; i < len; ++i){
-
-		  int nodeid = 0;
-		  in >> nodeid;
-		  if (nodeid >= 0){
-			_fixedNodes.insert(nodeid);
-		  }else{
-			succ = false;
-			ERROR_LOG("the fixed node's id is invalid: " << nodeid);
-		  }
-		}
-	  }
-	  return succ;
-	}
+	bool saveFixedNodes(const string filename)const;
+	bool loadFixedNodes(const string filename);
 	void print()const{}
 
   public slots:
-	void prepareSimulation(){
-	  if(_simulator){
-		_simulator->setVolMesh(_volObj->getTetMesh());
-		_simulator->setConNodes(_fixedNodes);
-		const bool succ = _simulator->precompute();
-		ERROR_LOG_COND("the precomputation is failed.",succ);
-	  }
-	}
+	void prepareSimulation();
 	bool simulate(){
 	  if(_simulator)
 		return _simulator->forward();

@@ -20,15 +20,17 @@ namespace SIMULATOR{
 	  stvkModel = pFullStVKSimModel(new FullStVKSimModel());
 	  simulator = pLagImpFullSim(new LagImpFullSim(stvkModel));
 	}
+	string name()const{
+	  return "full stvk";
+	}
+	bool init(const string filename){
+	  return simulator->init(filename);
+	}
 	void setVolMesh(pTetMesh_const tetMesh){
 	  stvkModel->setTetMesh(tetMesh);
 	}
-	bool init(const string filename){
-	  bool succ = stvkModel->init(filename);
-	  if (succ){
-		succ = simulator->init(filename);
-	  }
-	  return succ;
+	bool precompute(){
+	  return simulator->prepare();
 	}
 	void reset(){
 	  clearExtForces();
@@ -38,10 +40,12 @@ namespace SIMULATOR{
 
 	void setConNodes(const set<int> &nodes){
 
-	  VecT trip_C;
 	  const int n = stvkModel->dimension()/3;
-	  UTILITY::computeConM(nodes, trip_C, n);
-	  simulator->setConM(trip_C);
+	  if (n > 0){
+		VecT trip_C;
+		UTILITY::computeConM(nodes, trip_C, n);
+		simulator->setConM(trip_C, nodes.size()*3, n*3);
+	  }
 	}
 	void setUc(const VectorXd &uc){
 	  simulator->setUc(uc);
@@ -57,9 +61,6 @@ namespace SIMULATOR{
 	  simulator->setExtForceForAllNodes(0.0f,0.0f,0.0f);
 	}
 
-	bool precompute(){
-	  return simulator->prepare();
-	}
 	bool forward(){
 	  return simulator->forward();
 	}

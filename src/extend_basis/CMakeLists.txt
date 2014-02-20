@@ -15,6 +15,7 @@ TARGET_LINK_LIBRARIES(${APP_NAME}
   ${SUPERLU2.0_LIBRARIES}
   ${LAPACK_LIBRARIES}
   ${SUITESPARSE_LIBRARIES}
-  /usr/lib/libblas.a
+  /usr/lib/libblas.so
+  # /usr/lib/libblas.a
   ${Boost_LIBRARIES}
   )

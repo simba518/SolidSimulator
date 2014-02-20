@@ -31,7 +31,11 @@ namespace SIMULATOR{
 	  _text = pTextForRender(new TextForRender());
 	}
 	void render(){
-	  _text->update("SOLID SIMULATION",40,40);
+	  if (_dataModel){
+		_text->update(_dataModel->simulatorName(),40,40);
+	  }else{
+		_text->update("no data model",40,40);
+	  }
 	  this->draw();
 	}
 	void draw()const{

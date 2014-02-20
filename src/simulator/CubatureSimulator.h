@@ -3,6 +3,7 @@
 
 #include "Simulator.h"
 #include <ReducedSimulator.h>
+#include <boost/foreach.hpp>
 using namespace UTILITY;
 
 namespace SIMULATOR{
@@ -18,8 +19,8 @@ namespace SIMULATOR{
 	  stvkModel = pCubaturedElasticModel(new CubaturedElasticModel());
 	  simulator = pReducedSimulator(new ReducedImpLogConSimulator(stvkModel));
 	}
-	void setVolMesh(pTetMesh_const tetMesh){
-	  stvkModel->setVolMesh(tetMesh);
+	string name()const{
+	  return "cubature";
 	}
 	bool init(const string filename){
 	  bool succ = stvkModel->init(filename);
@@ -27,6 +28,12 @@ namespace SIMULATOR{
 		succ = simulator->init(filename);
 	  }
 	  return succ;
+	}
+	void setVolMesh(pTetMesh_const tetMesh){
+	  stvkModel->setVolMesh(tetMesh);
+	}
+	bool precompute(){
+	  return simulator->prepare();
 	}
 	void reset(){
 	  clearExtForces();
@@ -65,9 +72,6 @@ namespace SIMULATOR{
 	  simulator->setExtForce(full_ext);
 	}
 
-	bool precompute(){
-	  return simulator->prepare();
-	}
 	bool forward(){
 	  bool succ = simulator->forward();
 	  succ &= stvkModel->computeFullDisp(simulator->getQ(),full_disp);
