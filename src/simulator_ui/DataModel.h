@@ -9,6 +9,7 @@
 #include <TetMeshEmbeding.h>
 #include <JsonFilePaser.h>
 #include <Simulator.h>
+#include <PartialConstraints.h>
 using namespace std;
 using namespace UTILITY;
 
@@ -43,6 +44,12 @@ namespace SIMULATOR{
 		_fixedNodes.erase(sel_ids[i]);
 	  }
 	}
+	const vector<set<int> > &getConNodes()const{
+	  return _partialCon.getConNodesSet();
+	}
+	void updateUc(const Matrix<double,3,-1> &uc,const int group_id){
+	  _partialCon.updatePc(uc,group_id);
+	}
 
 	// perturbation
 	void setForces(const int nodeId,const double force[3]);
@@ -61,6 +68,9 @@ namespace SIMULATOR{
 	  assert(_simulator);
 	  return _simulator->getFullDisp();
 	}
+	const Matrix<double,3,-1> getUc(const int group)const{
+	  return _partialCon.getPc(group);
+	}
 
 	// io
 	bool saveFixedNodes(const string filename)const;
@@ -75,6 +85,7 @@ namespace SIMULATOR{
 	}
 	
   private:
+	PartialConstraints _partialCon;
 	pSimulator _simulator;
 	pTetMeshEmbeding _volObj;
 	set<int> _fixedNodes;

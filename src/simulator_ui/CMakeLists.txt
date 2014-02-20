@@ -5,12 +5,13 @@ SET(NONE_QT_CPP
 )
 
 SET(UI_SOURCES
+  DragNodeOp.cpp
   DataModel.cpp
   MainWindow.cpp  
 )
 
 SET(UI_HEADERS 
-
+  DragNodeOp.h
   PerturbationOp.h
   SelectionOp.h
   MainWindow.h

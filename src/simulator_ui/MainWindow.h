@@ -11,6 +11,7 @@
 #include "DataModel.h"
 #include "DataModelRender.h"
 #include "SelectionOp.h"
+#include "DragNodeOp.h"
 #include <boost/shared_ptr.hpp>
 using namespace QGLVEXT;
 #include <src/simulator_ui/ui_simulator.h>
@@ -42,6 +43,7 @@ namespace SIMULATOR{
 	pDataModel _dataModel;
 	pVolObjCtrl _volObjCtrl;
 	pSimSelectionCtrl _selCtrl;
+	pDragNodeCtrl _DragCtrl;
 	pDataModelRenderCtrl _renderCtrl;
 	pAniCtrl _aniCtrl;
 

@@ -12,7 +12,7 @@ void MainWindow::createComponents(){
 
   _mainwindow.setupUi(this);
   _viewer = _mainwindow.left_view;
-  _fileDialog = pFileDialog(new FileDialog(this));	  
+  _fileDialog = pFileDialog(new FileDialog(this));
   _viewer->show3DGrid();
 
   // data model	  
@@ -26,6 +26,7 @@ void MainWindow::createComponents(){
   // selection, drag
   _selCtrl = pSimSelectionCtrl(new SimSelectionCtrl(_viewer,_dataModel));
   _perturb = pPerturbationCtrl(new PerturbationCtrl(_viewer,_dataModel));
+  _DragCtrl = pDragNodeCtrl(new DragNodeCtrl(_viewer, _dataModel));
 }
 
 void MainWindow::createConnections(){
