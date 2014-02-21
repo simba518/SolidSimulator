@@ -15,11 +15,7 @@ namespace SIMULATOR{
   class SubspaceSimulator:public Simulator{
 	
   public:
-	SubspaceSimulator(){
-	  stvkModel = pReducedElasticModel(new DirectReductionElasticModel());
-	  // stvkModel = pReducedElasticModel(new CubaturedElasticModel());
-	  simulator = pReducedSimulator(new ReducedImpLogConSimulator(stvkModel));
-	}
+	SubspaceSimulator();
 	string name()const{
 	  return "subspace";
 	}
@@ -80,11 +76,7 @@ namespace SIMULATOR{
 	  simulator->setExtForce(full_ext);
 	}
 
-	bool forward(){
-	  bool succ = simulator->forward();
-	  succ &= stvkModel->computeFullDisp(simulator->getQ(),full_disp);
-	  return succ;
-	}
+	bool forward();
 
 	const VectorXd &getFullDisp()const{
 	  return full_disp;

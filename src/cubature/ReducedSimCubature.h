@@ -67,6 +67,15 @@ namespace CUBATURE{
 	const vector<int> &getSelectedTets()const{
 	  return selectedTets;
 	}
+	bool saveAsVTK(const string filename)const{
+	  
+	  VVec3d points(selectedTets.size());
+	  for (size_t i = 0; i < selectedTets.size(); ++i)
+		points[i] = tet_mesh->getTet(i).center();
+	  VTKWriter writer;
+	  writer.addPoints(points);
+	  return writer.write(filename);
+	}
 	
   protected:
 	int numTotalPoints(){

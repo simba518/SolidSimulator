@@ -169,20 +169,20 @@ bool DataModel::simulate(){
   }
 
   { // recording.
-	static vector<VectorXd> record_u, record_f;
-	static int i = 0;
-	i ++;
-	cout << i  << endl;
-	if (i < 300){
-	  record_u.push_back(getU());
-	  static VectorXd f;
-	  _simulator->computeElasticForce(getU(), f);
-	  record_f.push_back(f);
-	}else{
-	  EIGEN3EXT::write("training_u.b", record_u);
-	  EIGEN3EXT::write("training_f.b", record_f);
-	  exit(0);
-	}
+	// static vector<VectorXd> record_u, record_f;
+	// static int i = 0;
+	// i ++;
+	// cout << "recording: "<< i  << endl;
+	// if (i < 300){
+	//   record_u.push_back(getU());
+	//   static VectorXd f;
+	//   _simulator->computeElasticForce(getU(), f);
+	//   record_f.push_back(f);
+	// }else{
+	//   EIGEN3EXT::write("training_u.b", record_u);
+	//   EIGEN3EXT::write("training_f.b", record_f);
+	//   exit(0);
+	// }
   }
   
   return succ;

@@ -80,6 +80,7 @@ int main(int argc, char *argv[]){
   		   samples_per_subtrain);
 
   // save cubature
+  cout<< "cubature weights:\n " << cuba.getWeights().transpose() << endl << endl;;
   string save_points;
   jsonf.readFilePath("cubature_points", save_points,string("cubpoints.txt"),false);
   INFO_LOG("save samples to: "<< save_points);
@@ -89,6 +90,9 @@ int main(int argc, char *argv[]){
   jsonf.readFilePath("cubature_weights", save_weights,string("cubweights.b"),false);
   INFO_LOG("save weights to: "<< save_weights);
   UTILITY::writeVec(save_weights,cuba.getWeights());
+
+  bool succ = cuba.saveAsVTK(save_points+".vtk");
+  ERROR_LOG_COND("failed to save as vtk: "<< save_points+".vtk",succ);
   
   return 0;
 }
