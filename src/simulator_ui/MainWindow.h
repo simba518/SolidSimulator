@@ -31,8 +31,6 @@ namespace SIMULATOR{
 
   public slots:
 	void loadInitFile();
-	void saveConNodes();
-	void loadConNodes();
 	
   private:
 	Ui::MainWindow _mainwindow;

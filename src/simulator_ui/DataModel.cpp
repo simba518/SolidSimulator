@@ -20,7 +20,11 @@ pSimulator DataModel::createSimulator(const string filename)const{
 
   pSimulator sim;
   if ("subspace" == simulator_name){
-	sim = pSimulator(new SubspaceSimulator());
+	pReducedElasticModel elas_m = pReducedElasticModel(new DirectReductionElasticModel());
+	sim = pSimulator(new SubspaceSimulator(elas_m,string("subspace")));
+  }else if ("cubature" == simulator_name){
+	pReducedElasticModel elas_m = pReducedElasticModel(new CubaturedElasticModel());
+	sim = pSimulator(new SubspaceSimulator(elas_m,string("cubature")));
   }else{
 	sim = pSimulator(new FullStVKSimulator());
   }
@@ -59,57 +63,12 @@ bool DataModel::loadSetting(const string filename){
   return succ;
 }
 
-bool DataModel::saveConNodes(const string filename)const{
-
-  // OUTFILE(outf,filename.c_str());
-  // if(!outf.is_open()) return false;
-  // outf << _fixedNodes.size() << "\n";
-  // BOOST_FOREACH(const int ele, _fixedNodes){
-  // 	outf << ele << " ";
-  // }
-  // const bool succ = outf.good();
-  // outf.close();
-  // return succ;
-}
-
-bool DataModel::loadConNodes(const string filename){
-	  
-  // INFILE(in,filename.c_str());
-  // if(!in.is_open()) return false;
-
-  // bool succ = false;
-  // int len = 0;
-  // in >> len;
-  // if (len > 0){
-
-  // 	succ = true;
-  // 	_fixedNodes.clear();
-  // 	for (int i = 0; i < len; ++i){
-
-  // 	  int nodeid = 0;
-  // 	  in >> nodeid;
-  // 	  if (nodeid >= 0){
-  // 		_fixedNodes.insert(nodeid);
-  // 	  }else{
-  // 		succ = false;
-  // 		ERROR_LOG("the fixed node's id is invalid: " << nodeid);
-  // 	  }
-  // 	}
-  // }
-  // return succ;
-}
-
 void DataModel::prepareSimulation(){
 
   if(_simulator){
 	_simulator->setVolMesh(_volObj->getTetMesh());
 	const bool succ = _simulator->precompute();
 	ERROR_LOG_COND("the precomputation is failed.",succ);
-
-	// _simulator->setConNodes(_fixedNodes);
-	// VectorXd uc(_fixedNodes.size()*3);
-	// uc.setZero();
-	// _simulator->setUc(uc);
   }
 }
 
@@ -118,8 +77,6 @@ void DataModel::setForces(const int nodeId,const double force[3]){
   if(_simulator){
 	_simulator->setExtForceOfNode(nodeId,force);
 	this->simulate();
-	// cout<< "i = " << nodeId << endl;
-	// cout<< "force = (" << force[0] << ", " << force[1] << ", "<<force[2] << ")" << endl;
   }
 }
 
@@ -166,6 +123,7 @@ bool DataModel::simulate(){
   bool succ = false;
   if(_simulator){
 	succ = _simulator->forward();
+	_volObj->interpolate(getU());
   }
 
   { // recording.

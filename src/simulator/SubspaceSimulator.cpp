@@ -1,9 +1,8 @@
 #include "SubspaceSimulator.h" 
 using namespace SIMULATOR;
 
-SubspaceSimulator::SubspaceSimulator(){
+SubspaceSimulator::SubspaceSimulator():sim_name("cubature"){
 
-  // stvkModel = pReducedElasticModel(new DirectReductionElasticModel());
   stvkModel = pReducedElasticModel(new CubaturedElasticModel());
   simulator = pReducedSimulator(new ReducedImpLogConSimulator(stvkModel));
 }

@@ -32,8 +32,6 @@ void MainWindow::createComponents(){
 void MainWindow::createConnections(){
   
   connect(_mainwindow.actionLoadInitFile, SIGNAL(triggered()),this,SLOT(loadInitFile()));
-  connect(_mainwindow.actionSaveConNodes, SIGNAL(triggered()),this,SLOT(saveConNodes()));
-  connect(_mainwindow.actionLoadConNodes, SIGNAL(triggered()),this,SLOT(loadConNodes()));
 
   connect(_mainwindow.actionLoadObj, SIGNAL(triggered()), _volObjCtrl.get(), SLOT(loadObjMesh()));
   connect(_mainwindow.actionLoadVol, SIGNAL(triggered()), _volObjCtrl.get(), SLOT(loadVolMesh()));
@@ -97,18 +95,4 @@ void MainWindow::loadInitFile(){
 
   const string filename = _fileDialog->load("ini");
   if(filename.size() >0) loadInitFile(filename);
-}
-
-void MainWindow::saveConNodes(){
-
-  const string fname = _fileDialog->save();
-  if(fname.size() >0)
-	_fileDialog->warning(_dataModel->saveConNodes(fname));
-}
-
-void MainWindow::loadConNodes(){
-
-  const string fname = _fileDialog->load();
-  if(fname.size() >0)
-	_fileDialog->warning(_dataModel->loadConNodes(fname));
 }

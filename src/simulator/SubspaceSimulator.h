@@ -16,8 +16,12 @@ namespace SIMULATOR{
 	
   public:
 	SubspaceSimulator();
+	SubspaceSimulator(pReducedElasticModel elasticModel,const string name):sim_name(name){
+	  stvkModel = elasticModel;
+	  simulator = pReducedSimulator(new ReducedImpLogConSimulator(stvkModel));
+	}
 	string name()const{
-	  return "subspace";
+	  return sim_name;
 	}
 	bool init(const string filename){
 	  bool succ = stvkModel->init(filename);
@@ -94,6 +98,7 @@ namespace SIMULATOR{
 	}
 
   private:
+	const string sim_name;
 	pReducedElasticModel stvkModel;
 	pReducedSimulator simulator;
 	VectorXd full_disp;

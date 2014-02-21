@@ -67,8 +67,6 @@
     <addaction name="actionLoadInitFile"/>
     <addaction name="actionLoadObj"/>
     <addaction name="actionLoadVol"/>
-    <addaction name="actionSaveConNodes"/>
-    <addaction name="actionLoadConNodes"/>
     <addaction name="actionPrintSelected"/>
     <addaction name="actionExit"/>
    </widget>

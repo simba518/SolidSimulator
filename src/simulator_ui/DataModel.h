@@ -66,8 +66,6 @@ namespace SIMULATOR{
 	}
 
 	// io
-	bool saveConNodes(const string filename)const;
-	bool loadConNodes(const string filename);
 	void print()const{}
 
   public slots:
