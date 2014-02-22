@@ -25,8 +25,12 @@ pSimulator DataModel::createSimulator(const string filename)const{
   }else if ("cubature" == simulator_name){
 	pReducedElasticModel elas_m = pReducedElasticModel(new CubaturedElasticModel());
 	sim = pSimulator(new SubspaceSimulator(elas_m,string("cubature")));
+  }else if ("full_static" == simulator_name){
+	pBaseFullSim static_sim = pBaseFullSim(new PenStaticFullSim());
+	sim = pSimulator(new FullStVKSimulator(static_sim,"full static"));
   }else{
-	sim = pSimulator(new FullStVKSimulator());
+	pBaseFullSim static_sim = pBaseFullSim(new LagImpFullSim());
+	sim = pSimulator(new FullStVKSimulator(static_sim,"full stvk"));
   }
 
   return sim;

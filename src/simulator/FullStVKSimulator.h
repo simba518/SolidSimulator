@@ -3,8 +3,7 @@
 
 #include "Simulator.h"
 #include <ConMatrixTools.h>
-#include <LagImpFullSim.h>
-#include <FullStVKSimModel.h>
+#include <FullSimulator.h>
 using namespace UTILITY;
 
 namespace SIMULATOR{
@@ -16,12 +15,17 @@ namespace SIMULATOR{
   class FullStVKSimulator:public Simulator{
 	
   public:
-	FullStVKSimulator(){
+	FullStVKSimulator():sim_name("full stvk"){
 	  stvkModel = pFullStVKSimModel(new FullStVKSimModel());
-	  simulator = pLagImpFullSim(new LagImpFullSim(stvkModel));
+	  simulator = pBaseFullSim(new LagImpFullSim(stvkModel));
+	}
+	FullStVKSimulator(pBaseFullSim sim,const string name):sim_name(name){
+	  stvkModel = pFullStVKSimModel(new FullStVKSimModel());
+	  simulator = sim;
+	  simulator->setElasticModel(stvkModel);
 	}
 	string name()const{
-	  return "full stvk";
+	  return sim_name;
 	}
 	bool init(const string filename){
 	  return simulator->init(filename);
@@ -84,9 +88,9 @@ namespace SIMULATOR{
 	
   private:
 	pFullStVKSimModel stvkModel;
-	pLagImpFullSim simulator;
+	pBaseFullSim simulator;
+	const string sim_name;
   };
-  
   typedef boost::shared_ptr<FullStVKSimulator> pFullStVKSimulator;
   
 }//end of namespace
