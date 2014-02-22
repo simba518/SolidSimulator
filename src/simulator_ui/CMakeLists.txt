@@ -42,7 +42,6 @@ TARGET_LINK_LIBRARIES(${APPNAME}
   /usr/local/lib/libutility_common.a
   /usr/local/lib/libutility_math.a
   /usr/local/lib/libutility_elastic.a
-  /usr/local/lib/libutility_elastic_reduced.a
 
   ${QGLViewer_LIBRARIES}
   ${QT_LIBRARIES}

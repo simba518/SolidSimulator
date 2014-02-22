@@ -9,7 +9,6 @@ ADD_EXECUTABLE(${APP_NAME}
 TARGET_LINK_LIBRARIES(${APP_NAME}
 
   ${LIBRARY_OUTPUT_PATH}/libsolid_simulator.a
-  /usr/local/lib/libutility_elastic_reduced.a
   /usr/local/lib/libutility_elastic.a
   /usr/local/lib/libutility_math.a
   /usr/local/lib/libutility_common.a
