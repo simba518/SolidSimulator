@@ -39,9 +39,11 @@ int main(int argc, char *argv[]){
   }
 
   set<int> fixed_nodes;
-  jsonf.read("fixed_nodes", fixed_nodes);
+  jsonf.readVecFile("fixed_nodes", fixed_nodes,UTILITY::TEXT);
+  INFO_LOG("number of fixed nodes: " << fixed_nodes.size());
   int num_linear_modes = fixed_nodes.size()>0 ? 15:20;
   jsonf.read("num_linear_modes",num_linear_modes,num_linear_modes);
+  INFO_LOG("number of linear modes: " << num_linear_modes);
 
   /// compute full K, M
   INFO_LOG("computing full K, M....");

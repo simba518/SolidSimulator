@@ -20,6 +20,10 @@ namespace SIMULATOR{
 	  stvkModel = elasticModel;
 	  simulator = pReducedSimulator(new ReducedImpLogConSimulator(stvkModel));
 	}
+	SubspaceSimulator(pReducedElasticModel elasticModel,pReducedSimulator sim,const string name):sim_name(name){
+	  stvkModel = elasticModel;
+	  simulator = sim;
+	}
 	string name()const{
 	  return sim_name;
 	}

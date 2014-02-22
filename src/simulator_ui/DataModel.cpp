@@ -28,6 +28,10 @@ pSimulator DataModel::createSimulator(const string filename)const{
   }else if ("full_static" == simulator_name){
 	pBaseFullSim static_sim = pBaseFullSim(new PenStaticFullSim());
 	sim = pSimulator(new FullStVKSimulator(static_sim,"full static"));
+  }else if ("subspace_static" == simulator_name){
+	pReducedElasticModel elas_m = pReducedElasticModel(new DirectReductionElasticModel());
+	pReducedSimulator static_sim = pReducedSimulator(new ReducedStaticPenConSimulator(elas_m));
+	sim = pSimulator(new SubspaceSimulator(elas_m,static_sim,string("subspace static")));
   }else{
 	pBaseFullSim static_sim = pBaseFullSim(new LagImpFullSim());
 	sim = pSimulator(new FullStVKSimulator(static_sim,"full stvk"));
