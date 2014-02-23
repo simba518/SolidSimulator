@@ -138,8 +138,11 @@ bool DataModel::simulate(){
 	// static vector<VectorXd> record_u, record_f;
 	// static int i = 0;
 	// i ++;
+	// if (i < 20){
+	//   return succ;
+	// }
 	// cout << "recording: "<< i  << endl;
-	// if (i < 300){
+	// if (i < 520){
 	//   record_u.push_back(getU());
 	//   static VectorXd f;
 	//   _simulator->computeElasticForce(getU(), f);

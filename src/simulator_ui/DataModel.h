@@ -34,12 +34,16 @@ namespace SIMULATOR{
 
 	// set fixed nodes
 	void addConNodes(const vector<int> &sel_ids){
-	  _partialCon.addConNodes(sel_ids);
-	  resetPartialCon();
+	  if (sel_ids.size() > 0){
+		_partialCon.addConNodes(sel_ids);
+		resetPartialCon();
+	  }
 	}
 	void removeConNodes(const vector<int> &sel_ids){
-	  _partialCon.rmConNodes(sel_ids);
-	  resetPartialCon();
+	  if (sel_ids.size() > 0){
+		_partialCon.rmConNodes(sel_ids);
+		resetPartialCon();
+	  }
 	}
 	const vector<set<int> > &getConNodes()const{
 	  return _partialCon.getConNodesSet();
