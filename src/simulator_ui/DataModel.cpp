@@ -118,14 +118,20 @@ void DataModel::updateUc(const Matrix<double,3,-1> &uc,const int group_id){
 }
 
 void DataModel::updateXc(const Matrix<double,3,-1> &xc,const int group_id){
-  const Matrix<double,3,-1> uc = xc - _partialCon_x0.getPc();
+
+  const Matrix<double,3,-1> xc_0 = _partialCon_x0.getPc(group_id);
+  assert_eq(xc_0.size(), xc.size());
+  const Matrix<double,3,-1> uc = xc - xc_0;
   updateUc(uc, group_id);
 }
 
 const Matrix<double,3,-1> DataModel::getXc(const int group)const{
 
   assert_in(group,0,_partialCon.numGroup()-1);
-  return _partialCon.getPc(group) + _partialCon_x0.getPc(group);
+  const Matrix<double,3,-1> xc = _partialCon_x0.getPc(group);
+  const Matrix<double,3,-1> uc = _partialCon.getPc(group);
+  assert_eq(xc.size(), uc.size());
+  return xc + uc;
 }
 
 void DataModel::resetPartialCon(){
