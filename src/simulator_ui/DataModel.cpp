@@ -30,8 +30,12 @@ pSimulator DataModel::createSimulator(const string filename)const{
 	sim = pSimulator(new FullStVKSimulator(static_sim,"full static"));
   }else if ("subspace_static" == simulator_name){
 	pReducedElasticModel elas_m = pReducedElasticModel(new DirectReductionElasticModel());
-	pReducedSimulator static_sim = pReducedSimulator(new ReducedStaticPenConSimulator(elas_m));
+	pReducedSimulator static_sim =pReducedSimulator(new ReducedStaticPenConSimulator(elas_m));
 	sim = pSimulator(new SubspaceSimulator(elas_m,static_sim,string("subspace static")));
+  }else if ("cubature_static" == simulator_name){
+	pReducedElasticModel elas_m = pReducedElasticModel(new CubaturedElasticModel());
+	pReducedSimulator static_sim =pReducedSimulator(new ReducedStaticPenConSimulator(elas_m));
+	sim = pSimulator(new SubspaceSimulator(elas_m,static_sim,string("cubature static")));
   }else{
 	pBaseFullSim static_sim = pBaseFullSim(new LagImpFullSim());
 	sim = pSimulator(new FullStVKSimulator(static_sim,"full stvk"));
@@ -107,11 +111,21 @@ void DataModel::getSubUc(const vector<set<int> > &groups,const VectorXd &full_u,
 
 void DataModel::updateUc(const Matrix<double,3,-1> &uc,const int group_id){
 
+  assert_gt(uc.size(),0);
   _partialCon.updatePc(uc,group_id);
-  if(uc.size() > 0){
-	const int n = _partialCon.getPc().size();
-	_simulator->setUc(Map<VectorXd>(const_cast<double*>(&(_partialCon.getPc()(0,0))),n));
-  }
+  const int n = _partialCon.getPc().size();
+  _simulator->setUc(Map<VectorXd>(const_cast<double*>(&(_partialCon.getPc()(0,0))),n));
+}
+
+void DataModel::updateXc(const Matrix<double,3,-1> &xc,const int group_id){
+  const Matrix<double,3,-1> uc = xc - _partialCon_x0.getPc();
+  updateUc(uc, group_id);
+}
+
+const Matrix<double,3,-1> DataModel::getXc(const int group)const{
+
+  assert_in(group,0,_partialCon.numGroup()-1);
+  return _partialCon.getPc(group) + _partialCon_x0.getPc(group);
 }
 
 void DataModel::resetPartialCon(){
@@ -119,6 +133,13 @@ void DataModel::resetPartialCon(){
   Matrix<double,3,-1> pc;
   getSubUc(_partialCon.getConNodesSet(),getU(),pc);
   _partialCon.updatePc(pc);
+
+  if (rest_shape.size() != getVolMesh()->nodes().size()*3){
+	getVolMesh()->nodes(rest_shape);
+  }
+  getSubUc(_partialCon_x0.getConNodesSet(),rest_shape,pc);
+  _partialCon_x0.updatePc(pc);
+
   static vector<int> con_nodes;
   static VectorXd con_uc;
   _partialCon.getPartialCon(con_nodes, con_uc);
@@ -138,11 +159,11 @@ bool DataModel::simulate(){
 	// static vector<VectorXd> record_u, record_f;
 	// static int i = 0;
 	// i ++;
-	// if (i < 20){
+	// if (i < 200){
 	//   return succ;
 	// }
-	// cout << "recording: "<< i  << endl;
-	// if (i < 520){
+	// cout << "recording: "<< i-200  << endl;
+	// if (i < 400){
 	//   record_u.push_back(getU());
 	//   static VectorXd f;
 	//   _simulator->computeElasticForce(getU(), f);

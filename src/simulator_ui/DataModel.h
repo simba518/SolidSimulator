@@ -36,12 +36,14 @@ namespace SIMULATOR{
 	void addConNodes(const vector<int> &sel_ids){
 	  if (sel_ids.size() > 0){
 		_partialCon.addConNodes(sel_ids);
+		_partialCon_x0.addConNodes(sel_ids);
 		resetPartialCon();
 	  }
 	}
 	void removeConNodes(const vector<int> &sel_ids){
 	  if (sel_ids.size() > 0){
 		_partialCon.rmConNodes(sel_ids);
+		_partialCon_x0.rmConNodes(sel_ids);
 		resetPartialCon();
 	  }
 	}
@@ -49,6 +51,7 @@ namespace SIMULATOR{
 	  return _partialCon.getConNodesSet();
 	}
 	void updateUc(const Matrix<double,3,-1> &uc,const int group_id);
+	void updateXc(const Matrix<double,3,-1> &xc,const int group_id);
 
 	// perturbation
 	void setForces(const int nodeId,const double force[3]);
@@ -68,6 +71,7 @@ namespace SIMULATOR{
 	  assert_in(group,0,_partialCon.numGroup()-1);
 	  return _partialCon.getPc(group);
 	}
+	const Matrix<double,3,-1> getXc(const int group)const;
 
 	// io
 	void print()const{}
@@ -85,8 +89,10 @@ namespace SIMULATOR{
 	
   private:
 	PartialConstraints _partialCon;
+	PartialConstraints _partialCon_x0;
 	pSimulator _simulator;
 	pTetMeshEmbeding _volObj;
+	VectorXd rest_shape;
   };
   
   typedef boost::shared_ptr<DataModel> pDataModel;

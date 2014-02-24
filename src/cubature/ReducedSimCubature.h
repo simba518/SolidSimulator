@@ -39,6 +39,9 @@ namespace CUBATURE{
 	  const MatrixXd training_reduced_disp = B.transpose()*training_full_disp;
 	  const MatrixXd training_reduced_forces = B.transpose()*training_full_forces;
 
+	  cout << "Bt*f(q) - F(B*q): " << (B*training_reduced_forces-training_full_forces).norm() << endl;
+	  cout << "Bt*q - u: " << (B*training_reduced_disp-training_full_disp).norm() << endl;
+
 	  TrainingSet trainingSet(training_reduced_disp.cols());
 	  for (size_t i = 0; i < trainingSet.size(); ++i){
 		trainingSet[i] = new VECTOR(training_reduced_disp.rows());
@@ -50,12 +53,19 @@ namespace CUBATURE{
 	  memcpy(trainingForces.data(), &training_reduced_forces(0,0), sizeof(double)*training_reduced_forces.size());
 	  
 	  GreedyCubop::run(trainingSet, 
-					   trainingForces, 
-					   rel_err_tol, 
-					   max_points, 
-					   cands_per_iter, 
-					   iters_per_full_nnls, 
-					   samples_per_subtrain);
+	  				   trainingForces, 
+	  				   rel_err_tol, 
+	  				   max_points, 
+	  				   cands_per_iter, 
+	  				   iters_per_full_nnls, 
+	  				   samples_per_subtrain);
+
+	  // GreedyCubop::runNQP(trainingSet, 
+	  // 					  trainingForces, 
+	  // 					  rel_err_tol, 
+	  // 					  max_points, 
+	  // 					  cands_per_iter,
+	  // 					  true);
 	  
 	  for (size_t i = 0; i < trainingSet.size(); ++i){
 		delete trainingSet[i];
@@ -84,6 +94,9 @@ namespace CUBATURE{
 	void evalPointForceDensity(int tet_id, VECTOR& q,VECTOR& gOut){
 	  
 	  assert_in(tet_id, 0, numTotalPoints()-1);
+	  assert_eq(gOut.size(), q.size());
+	  assert_eq(q.size(), B.cols());
+
 	  VectorXd x = rest_shape;
 	  const VectorXd &qe = Map<VectorXd>(q.data(),q.size());
 	  for (int j = 0;  j < 4; ++j){

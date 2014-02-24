@@ -12,6 +12,7 @@
 #include "DataModelRender.h"
 #include "SelectionOp.h"
 #include "DragNodeOp.h"
+#include "Manipulatoion.h"
 #include <boost/shared_ptr.hpp>
 using namespace QGLVEXT;
 #include <src/simulator_ui/ui_simulator.h>
@@ -38,6 +39,7 @@ namespace SIMULATOR{
 	pFileDialog _fileDialog;
 	pPerturbationCtrl _perturb;
 
+	pLocalframeManipulatoionCtrl manipulation_ctrl;
 	pDataModel _dataModel;
 	pVolObjCtrl _volObjCtrl;
 	pSimSelectionCtrl _selCtrl;

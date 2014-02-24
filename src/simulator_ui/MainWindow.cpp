@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "ManipulateOP.h"
 using namespace SIMULATOR;
 
 MainWindow::MainWindow(QWidget *parent,Qt::WFlags flags):QMainWindow(parent,flags){
@@ -27,7 +28,10 @@ void MainWindow::createComponents(){
   // selection, drag
   _selCtrl = pSimSelectionCtrl(new SimSelectionCtrl(_viewer,_dataModel));
   _perturb = pPerturbationCtrl(new PerturbationCtrl(_viewer,_dataModel));
-  _DragCtrl = pDragNodeCtrl(new DragNodeCtrl(_viewer, _dataModel));
+  // _DragCtrl = pDragNodeCtrl(new DragNodeCtrl(_viewer, _dataModel));
+
+  pLocalframeManipulatoion mani = pLocalframeManipulatoion(new ManipulateOP(_viewer,_dataModel));
+  manipulation_ctrl = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, mani));
 }
 
 void MainWindow::createConnections(){
