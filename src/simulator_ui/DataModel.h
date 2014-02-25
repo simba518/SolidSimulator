@@ -81,6 +81,8 @@ namespace SIMULATOR{
 	bool simulate();
 	void reset(){
 	  if(_simulator) _simulator->reset();
+	  _partialCon.setZero();
+	  resetPartialCon();
 	}
 
   protected:
