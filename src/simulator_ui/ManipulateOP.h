@@ -20,7 +20,7 @@ namespace SIMULATOR{
   class ManipulateOP:public LocalframeManipulatoionExt{
 	
   public:
-	ManipulateOP(QGLViewer *v,pDataModel dm):
+	ManipulateOP(pQGLViewerExt v,pDataModel dm):
 	  LocalframeManipulatoionExt(v),data_model(dm){
 	  dragged_group_id = -1;
 	}
@@ -54,8 +54,7 @@ namespace SIMULATOR{
 	}
 	void applyTransform(){
 	  LocalframeManipulatoionExt::applyTransform();
-	  if(data_model){
-		assert_ge(dragged_group_id,0);
+	  if(data_model && dragged_group_id >= 0){
 		data_model->updateXc(manipulated_pos,dragged_group_id);
 	  }
 	}
