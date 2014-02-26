@@ -29,7 +29,7 @@ void DragNodeOp::drawWithNames ()const{
 
 void DragNodeOp::draw()const{
   
-  if (data_model!=NULL&&hasDraggedGroup()){
+  if (data_model!=NULL&&hasDraggedGroup()&&data_model->getVolMesh()){
   	pTetMesh_const vol_mesh = data_model->getVolMesh();
 	const set<int> dragged_nodes = data_model->getConNodes()[draggedGroupId];
   	const VectorXd &vol_u = data_model->getU();

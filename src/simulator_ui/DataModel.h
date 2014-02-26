@@ -64,8 +64,11 @@ namespace SIMULATOR{
 	  return _volObj->getTetMesh();
 	}
 	const VectorXd &getU()const{
-	  assert(_simulator);
-	  return _simulator->getFullDisp();
+	  static VectorXd tempt_u;
+	  if (_simulator){
+		return _simulator->getFullDisp();
+	  }
+	  return tempt_u;
 	}
 	const Matrix<double,3,-1> getUc(const int group)const{
 	  assert_in(group,0,_partialCon.numGroup()-1);

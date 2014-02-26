@@ -38,7 +38,8 @@ namespace SIMULATOR{
 	  }
 	}
 	void select(const vector<int> &sel_ids){
-	  if(sel_ids.size()>0){
+
+	  if(sel_ids.size()>0 && data_model && data_model->getVolMesh()){
 		assert_in(sel_ids[0],0,totalEleNum());
 		dragged_group_id = sel_ids[0];
 		manipulated_pos = data_model->getXc(sel_ids[0]);

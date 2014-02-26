@@ -5,9 +5,7 @@
 using namespace SIMULATOR;
 
 DataModel::DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
-
   assert(embeding);
-  _simulator = pSimulator(new FullStVKSimulator());
 }
 
 pSimulator DataModel::createSimulator(const string filename)const{
@@ -62,11 +60,6 @@ bool DataModel::loadSetting(const string filename){
 	}
   }
 
-  // string fixed_node_file;
-  // if (jsonf.readFilePath("fixed_nodes", fixed_node_file)){
-  // 	succ &= loadFixedNodes(fixed_node_file);
-  // }
-	  
   if (_simulator){
 	succ &= _simulator->init(filename);
   }
@@ -111,10 +104,12 @@ void DataModel::getSubUc(const vector<set<int> > &groups,const VectorXd &full_u,
 
 void DataModel::updateUc(const Matrix<double,3,-1> &uc,const int group_id){
 
-  assert_gt(uc.size(),0);
-  _partialCon.updatePc(uc,group_id);
-  const int n = _partialCon.getPc().size();
-  _simulator->setUc(Map<VectorXd>(const_cast<double*>(&(_partialCon.getPc()(0,0))),n));
+  if (_simulator){
+	assert_gt(uc.size(),0);
+	_partialCon.updatePc(uc,group_id);
+	const int n = _partialCon.getPc().size();
+	_simulator->setUc(Map<VectorXd>(const_cast<double*>(&(_partialCon.getPc()(0,0))),n));
+  }
 }
 
 void DataModel::updateXc(const Matrix<double,3,-1> &xc,const int group_id){
@@ -135,6 +130,10 @@ const Matrix<double,3,-1> DataModel::getXc(const int group)const{
 }
 
 void DataModel::resetPartialCon(){
+
+  if (!_simulator){
+	return ;
+  }
 
   Matrix<double,3,-1> pc;
   getSubUc(_partialCon.getConNodesSet(),getU(),pc);
