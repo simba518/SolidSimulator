@@ -1,4 +1,5 @@
 #include "DataModel.h"
+#include <MASimulator.h>
 #include <SubspaceSimulator.h>
 #include <FullStVKSimulator.h>
 #include <MatrixIO.h>
@@ -34,6 +35,8 @@ pSimulator DataModel::createSimulator(const string filename)const{
 	pReducedElasticModel elas_m = pReducedElasticModel(new CubaturedElasticModel());
 	pReducedSimulator static_sim =pReducedSimulator(new ReducedStaticPenConSimulator(elas_m));
 	sim = pSimulator(new SubspaceSimulator(elas_m,static_sim,string("cubature static")));
+  }else if ("modal_analysis" == simulator_name){
+	sim = pSimulator(new MASimulator());
   }else{
 	pBaseFullSim static_sim = pBaseFullSim(new LagImpFullSim());
 	sim = pSimulator(new FullStVKSimulator(static_sim,"full stvk"));

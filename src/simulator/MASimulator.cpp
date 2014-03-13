@@ -1,16 +1,17 @@
+#include <JsonFilePaser.h>
 #include <SparseMatrixTools.h>
 #include <ElasticForceTetFullStVK.h>
 #include <SparseGenEigenSolver.h>
 #include <MassMatrix.h>
 #include <SparseMatrixTools.h>
-#include "Simulator.h"
+#include "MASimulator.h"
 
 using namespace UTILITY;
-using namespace SIMULATOR;
 using namespace EIGEN3EXT;
+using namespace SIMULATOR;
 
-bool Simulator::loadSetting(const string filename){
-  
+bool MASimulator::init(const string filename){
+
   TRACE_FUN();
   JsonFilePaser jsonf;
   if (!jsonf.open(filename)){
@@ -22,15 +23,43 @@ bool Simulator::loadSetting(const string filename){
   succ &= jsonf.read("alpha_k",_ak);
   succ &= jsonf.read("alpha_m",_am);
   succ &= jsonf.read("rw",_eigenNum);
+
+  vector<int> fixed_nodes;
+  jsonf.readVecFile("fixed_nodes",fixed_nodes,TEXT);
+  setConNodes(fixed_nodes);
+
+  jsonf.readVecFile("eigenvalues",_lambda);
+  jsonf.readMatFile("eigenvectors",_W);
+  
+  if (_eigenNum > 0 && _eigenNum < _lambda.size()){
+
+	const MatrixXd tv = _W;
+	_W = tv.leftCols(_eigenNum);
+	const VectorXd tl = _lambda;
+	_lambda = tl.head(_eigenNum);
+  }
   
   return succ;
 }
 
-bool Simulator::precompute(){
-
+bool MASimulator::precompute(){
+  
   TRACE_FUN();
   if(!_tetMesh)
 	return false;
+
+  if (_W.cols() == _lambda.size() && _W.rows() == _tetMesh->nodes().size()*3){
+	INFO_LOG("use W and lambda read from file");
+	INFO_LOG("number of eigen vectors: " << _lambda.size());
+	reset();
+
+	_fext.resize(_W.rows());
+	_fext.setZero();
+	for (int i = 0; i < _tetMesh->nodes().size(); ++i){
+	  _fext[i*3] = -1.2e-10;
+	}
+	return true;
+  }
 
   /// compute full K, M
   ElasticForceTetFullStVK ela(_tetMesh);
@@ -44,6 +73,7 @@ bool Simulator::precompute(){
   mass.compute(M,*_tetMesh);
 
   /// remove fixed nodes
+  INFO_LOG("num of fixed nodes: " << _fixedNodes.size());
   SparseMatrix<double> P;
   EIGEN3EXT::genReshapeMatrix(K.rows(),3,_fixedNodes,P);
   K = P*(K*P.transpose());
@@ -66,27 +96,29 @@ bool Simulator::precompute(){
 
   reset();
 
-  // test Wt*M*W
-  const MatrixXd WtMW_I = _W.transpose()*M*_W-MatrixXd::Identity(_W.cols(),_W.cols());
-  cout << "(WtMW-I).norm(): " << WtMW_I.norm() << endl;
-  cout << "eigenvalues: " << _lambda.transpose() << endl;
-  cout << "norm(Klower): " << Klower.norm() << endl;
-  cout << "norm(M): " << diagM.norm() << endl;
+  _fext.resize(_W.rows());
+  _fext.setZero();
+  for (int i = 0; i < _tetMesh->nodes().size(); ++i){
+	_fext[i*3+1] = -3e-2;
+  }
 
   return succ;
 }
 
-bool Simulator::simulate(){
+bool MASimulator::forward(){
 
-  assert_eq(_W.rows(),_fext.size());
+  if (_W.rows() != _fext.size()){
+	_fext.resize(_W.rows());
+	_fext.setZero();
+  }
   _F_reduced = _W.transpose()*_fext;
-  forward();
+  solve();
   assert_eq(_W.cols(),_z.size());
   _u = _W*_z;
   return true;
 }
 
-void Simulator::forward(){
+void MASimulator::solve(){
   
   assert_eq(_F_reduced.size(),_z.size());
   assert_eq(_z.size(),_v.size());
@@ -98,13 +130,4 @@ void Simulator::forward(){
 	_v[i] = (_v[i]+_h*_F_reduced[i]-_h*_lambda[i]*_z[i])/(1+_h*d+_lambda[i]*_h*_h);
     _z[i] = _z[i]+_h*_v[i];
   }
-}
-
-void Simulator::print()const{
-  
-  cout << "num of fixed nodes: " << _fixedNodes.size() << endl;
-  cout << "num of eigen vales: " << _eigenNum << endl;;
-  cout << "h: " << _h << endl;
-  cout << "ak: " << _ak << endl;
-  cout << "am: " << _am << endl;
 }

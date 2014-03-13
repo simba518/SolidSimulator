@@ -52,10 +52,8 @@ void MainWindow::createConnections(){
 		  _viewer,SLOT(resetSceneBoundBox(double,double,double,double,double,double)));
   connect(_volObjCtrl.get(),SIGNAL(resetSceneMsg(double,double,double,double,double,double)),
 		  _dataModel.get(),SLOT(resetMaterialGroup()));
-  connect(_volObjCtrl.get(),SIGNAL(resetSceneMsg(double,double,double,double,double,double)),
-		  _dataModel.get(),SLOT(prepareSimulation()));
   connect(_mainwindow.actionPrepareSimulation,SIGNAL(triggered()),
-		  _dataModel.get(),SLOT(prepareSimulation()));
+  		  _dataModel.get(),SLOT(prepareSimulation()));
   
   // selection
   connect(_mainwindow.actionSelectTets, SIGNAL(triggered()), _selCtrl.get(), SLOT(selectTets()));
@@ -101,6 +99,7 @@ void MainWindow::paserCommandLine(){
 
 void MainWindow::loadInitFile(const string filename){
 
+  TRACE_FUN();
   this->init_filename = filename;
   if(boost::filesystem::exists(filename)){
 

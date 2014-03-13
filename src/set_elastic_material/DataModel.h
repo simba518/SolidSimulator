@@ -38,6 +38,7 @@ namespace SIMULATOR{
 		ERROR_LOG("failed to open: " << filename);
 		return false;
 	  }
+	  assert (_volObj->getTetMesh());
 	  _mtlGroups.reset(_volObj->getTetMesh());
 
 	  bool succ = true;
@@ -52,6 +53,7 @@ namespace SIMULATOR{
 	  }
 	  
 	  if (_simulator){
+		_simulator->setVolMesh(_volObj->getTetMesh());
 		succ &= _simulator->loadSetting(filename);
 	  }
 
@@ -179,12 +181,14 @@ namespace SIMULATOR{
 	}
 	void prepareSimulation(){
 
+	  TRACE_FUN();
 	  if(_simulator && _volObj->getTetMesh()){
 		setMaterial();
 		_simulator->setVolMesh(_volObj->getTetMesh());
 		_simulator->setFixedNodes(_fixedNodes);
 		const bool succ = _simulator->precompute();
 		ERROR_LOG_COND("the precomputation is failed.",succ);
+		ERROR_LOG_COND("the precomputation is success.",!succ);
 	  }
 	}
 	void setMaterial(){

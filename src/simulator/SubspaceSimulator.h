@@ -46,8 +46,7 @@ namespace SIMULATOR{
 	  return succ;
 	}
 	void reset(){
-	  clearExtForce();
-	  removeAllConNodes();
+	  Simulator::reset();
 	  simulator->reset();
 	  if (stvkModel){
 		full_disp.resize(stvkModel->fullDim());
@@ -65,23 +64,8 @@ namespace SIMULATOR{
 	  simulator->removeAllCon();
 	}
 	
-	void setExtForceOfNode(const int node_id,const double f[3]){
-
-	  static VectorXd full_ext;
-	  full_ext.resize(stvkModel->fullDim());
-	  full_ext.setZero();
-	  full_ext[node_id*3+0] = f[0];
-	  full_ext[node_id*3+1] = f[1];
-	  full_ext[node_id*3+2] = f[2];
-	  simulator->setExtForce(full_ext);
-	}
 	void setExtForce(const VectorXd &f_ext){
 	  simulator->setExtForce(f_ext);
-	}
-	void clearExtForce(){
-	  VectorXd full_ext(stvkModel->fullDim());
-	  full_ext.setZero();
-	  simulator->setExtForce(full_ext);
 	}
 
 	bool forward();

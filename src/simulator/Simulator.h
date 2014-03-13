@@ -23,16 +23,31 @@ namespace SIMULATOR{
 	}
 	virtual bool init(const string filename) = 0;
 	virtual void setVolMesh(pTetMesh_const tetMesh) = 0;
-	virtual bool precompute(){}
-	virtual void reset() = 0;
+	virtual bool precompute(){return true;}
+	virtual void reset(){
+	  clearExtForce();
+	  removeAllConNodes();
+	}
 
 	virtual void setConNodes(const vector<int> &con_nodes) = 0;
 	virtual void setUc(const VectorXd &uc) = 0;
 	virtual void removeAllConNodes() = 0;
 
-	virtual void setExtForceOfNode(const int nodeId,const double f[3]) = 0;
+	virtual void setExtForceOfNode(const int node_id,const double f[3]){
+	  static VectorXd full_ext;
+	  full_ext.resize(getFullDisp().size());
+	  full_ext.setZero();
+	  full_ext[node_id*3+0] = f[0];
+	  full_ext[node_id*3+1] = f[1];
+	  full_ext[node_id*3+2] = f[2];
+	  this->setExtForce(full_ext);
+	}
 	virtual void setExtForce(const VectorXd &f_ext) = 0;
-	virtual void clearExtForce() = 0;
+	virtual void clearExtForce(){
+	  VectorXd full_ext(getFullDisp().size());
+	  full_ext.setZero();
+	  setExtForce(full_ext);
+	}
 
 	virtual bool forward() = 0;
 
