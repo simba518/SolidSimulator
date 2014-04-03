@@ -13,7 +13,7 @@
 #include "SelectionOp.h"
 #include <boost/shared_ptr.hpp>
 using namespace QGLVEXT;
-#include <src/set_elastic_material/ui_set_elastic_mtl.h>
+#include "ui_set_elastic_mtl.h"
 
 namespace SIMULATOR{
   

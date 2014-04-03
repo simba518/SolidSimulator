@@ -52,12 +52,6 @@ bool MASimulator::precompute(){
 	INFO_LOG("use W and lambda read from file");
 	INFO_LOG("number of eigen vectors: " << _lambda.size());
 	reset();
-
-	_fext.resize(_W.rows());
-	_fext.setZero();
-	for (int i = 0; i < _tetMesh->nodes().size(); ++i){
-	  _fext[i*3] = -1.2e-10;
-	}
 	return true;
   }
 
@@ -92,16 +86,10 @@ bool MASimulator::precompute(){
   succ &= EigenSparseGenEigenSolver::solve(Klower,diagM,_W,_lambda,_eigenNum);
 #endif
 
+  // _W.col(0) += VectorXd::Random(_W.rows())*_W.col(0).norm()*0.005f;
   _W = P.transpose()*_W;
 
   reset();
-
-  _fext.resize(_W.rows());
-  _fext.setZero();
-  for (int i = 0; i < _tetMesh->nodes().size(); ++i){
-	_fext[i*3+1] = -3e-2;
-  }
-
   return succ;
 }
 

@@ -33,6 +33,8 @@ namespace SIMULATOR{
 	void render(){
 	  if (_dataModel){
 		_text->update(_dataModel->simulatorName(),40,40);
+		const string msg = string("recorded ")+TOSTR(_dataModel->getRecord().size());
+		_text->update(msg,40,80);
 	  }else{
 		_text->update("no data model",40,40);
 	  }

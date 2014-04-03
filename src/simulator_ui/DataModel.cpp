@@ -7,6 +7,8 @@ using namespace SIMULATOR;
 
 DataModel::DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
   assert(embeding);
+  steps = 1;
+  _record = false;
 }
 
 pSimulator DataModel::createSimulator(const string filename)const{
@@ -62,9 +64,16 @@ bool DataModel::loadSetting(const string filename){
 	  succ = _volObj->getTetMesh()->loadElasticMtl(mtlfile);
 	}
   }
-
+  jsonf.read("num_step", steps, 1);
   if (_simulator){
 	succ &= _simulator->init(filename);
+	if (succ){
+	  vector<int> fixed_nodes;
+	  if(jsonf.readVecFile("fixed_nodes",fixed_nodes,TEXT)){
+		prepareSimulation();
+		addConNodes(fixed_nodes);
+	  }
+	}
   }
 
   print();
@@ -160,28 +169,17 @@ bool DataModel::simulate(){
   bool succ = false;
   if(_simulator){
 	succ = _simulator->forward();
+	for (int i = 1; i < steps; ++i){
+	  succ &= _simulator->forward();
+	}
 	_volObj->interpolate(getU());
   }
 
-  { // recording.
-	// static vector<VectorXd> record_u, record_f;
-	// static int i = 0;
-	// i ++;
-	// if (i < 200){
-	//   return succ;
-	// }
-	// cout << "recording: "<< i-200  << endl;
-	// if (i < 400){
-	//   record_u.push_back(getU());
-	//   static VectorXd f;
-	//   _simulator->computeElasticForce(getU(), f);
-	//   record_f.push_back(f);
-	// }else{
-	//   EIGEN3EXT::write("training_u.b", record_u);
-	//   EIGEN3EXT::write("training_f.b", record_f);
-	//   exit(0);
-	// }
-  }
-  
+  // recording.
+  if (succ && _record)
+	_recorded_vol_u.push_back(getU());
+
+  ERROR_LOG_COND("simulation failed.",succ);
+
   return succ;
 }

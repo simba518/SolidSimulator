@@ -78,6 +78,22 @@ namespace SIMULATOR{
 
 	// io
 	void print()const{}
+	const vector<VectorXd> &getRecord()const{
+	  return _recorded_vol_u;
+	}
+	bool saveRecord(const string filename)const{
+	  return EIGEN3EXT::write(filename,_recorded_vol_u);
+	}
+	bool saveRecordAsVTK(const string filename)const{
+	  if(_volObj && _volObj->getTetMesh())
+		return _volObj->getTetMesh()->writeVTK(filename, _recorded_vol_u);
+	  return false;
+	}
+	bool saveMtlAsVTK(const string filename)const{
+	  if(_volObj && _volObj->getTetMesh())
+		return _volObj->getTetMesh()->writeElasticMtlVTK(filename);
+	  return false;
+	}
 
   public slots:
 	void prepareSimulation();
@@ -86,6 +102,12 @@ namespace SIMULATOR{
 	  if(_simulator) _simulator->reset();
 	  _partialCon.setZero();
 	  resetPartialCon();
+	}
+	void toggleRecord(){
+	  _record = _record ? false:true;
+	}
+	void clearRecord(){
+	  _recorded_vol_u.clear();
 	}
 
   protected:
@@ -98,6 +120,9 @@ namespace SIMULATOR{
 	pSimulator _simulator;
 	pTetMeshEmbeding _volObj;
 	VectorXd rest_shape;
+	int steps; // number of steps for each simulation.
+	bool _record;
+	vector<VectorXd> _recorded_vol_u;
   };
   
   typedef boost::shared_ptr<DataModel> pDataModel;

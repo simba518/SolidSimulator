@@ -24,17 +24,16 @@ namespace SIMULATOR{
 	  simulator = sim;
 	  simulator->setElasticModel(stvkModel);
 	}
-	string name()const{
-	  return sim_name;
-	}
-	bool init(const string filename){
-	  return simulator->init(filename);
-	}
-	void setVolMesh(pTetMesh_const tetMesh){
-	  stvkModel->setTetMesh(tetMesh);
-	}
+	string name()const{return sim_name;}
+	bool init(const string filename){return simulator->init(filename);}
+	void setVolMesh(pTetMesh_const tetMesh){stvkModel->setTetMesh(tetMesh);}
 	bool precompute(){
-	  return simulator->prepare();
+	  simulator->prepare();
+	  setConNodes(con_nodes);
+	  VectorXd uc(con_nodes.size()*3);
+	  uc.setZero();
+	  setUc(uc);
+	  return true;
 	}
 	void reset(){
 	  clearExtForce();
@@ -44,6 +43,7 @@ namespace SIMULATOR{
 
 	void setConNodes(const vector<int> &nodes){
 
+	  con_nodes = nodes;
 	  if (nodes.size() <= 0){
 		removeAllConNodes();
 		return;
@@ -56,30 +56,18 @@ namespace SIMULATOR{
 		simulator->setConM(trip_C, nodes.size()*3, n*3);
 	  }
 	}
-	void setUc(const VectorXd &uc){
-	  simulator->setUc(uc);
-	}
-	void removeAllConNodes(){
-	  simulator->removeAllCon();
-	}
+	void setUc(const VectorXd &uc){simulator->setUc(uc);}
+	void removeAllConNodes(){simulator->removeAllCon();}
 	
 	void setExtForceOfNode(const int nodeId,const double f[3]){
 	  simulator->setExtForceOfNode(f, nodeId);
 	}
-	void setExtForce(const VectorXd &f_ext){
-	  simulator->setExtForce(f_ext);
-	}
-	void clearExtForce(){
-	  simulator->setExtForceForAllNodes(0.0f,0.0f,0.0f);
-	}
+	void setExtForce(const VectorXd &f_ext){simulator->setExtForce(f_ext);}
+	void clearExtForce(){simulator->setExtForceForAllNodes(0.0f,0.0f,0.0f);}
 
-	bool forward(){
-	  return simulator->forward();
-	}
+	bool forward(){return simulator->forward();}
 
-	const VectorXd &getFullDisp()const{
-	  return simulator->getU();
-	}
+	const VectorXd &getFullDisp()const{return simulator->getU();}
 	bool computeElasticForce(const VectorXd &u,VectorXd &f)const{
 	  if (stvkModel)
 		return stvkModel->evaluateF(u,f);
@@ -87,6 +75,7 @@ namespace SIMULATOR{
 	}
 	
   private:
+	vector<int> con_nodes;
 	pFullStVKSimModel stvkModel;
 	pBaseFullSim simulator;
 	const string sim_name;

@@ -67,6 +67,9 @@
     <addaction name="actionLoadInitFile"/>
     <addaction name="actionLoadObj"/>
     <addaction name="actionLoadVol"/>
+    <addaction name="actionSaveRecordDisp"/>
+    <addaction name="actionSaveMtlAsVTK"/>
+    <addaction name="actionSaveRecordVTK"/>
     <addaction name="actionPrintSelected"/>
     <addaction name="actionExit"/>
    </widget>
@@ -85,6 +88,8 @@
     <addaction name="actionPrepareSimulation"/>
     <addaction name="actionPauseSimulation"/>
     <addaction name="actionReset"/>
+    <addaction name="actionRecordDisp"/>
+    <addaction name="actionClearRecordDisp"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menuView"/>
@@ -287,6 +292,37 @@
   <action name="actionInterpolateMaterials">
    <property name="text">
     <string>InterpolateMaterials</string>
+   </property>
+  </action>
+  <action name="actionRecordDisp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>RecordDisp</string>
+   </property>
+   <property name="shortcut">
+    <string>C</string>
+   </property>
+  </action>
+  <action name="actionClearRecordDisp">
+   <property name="text">
+    <string>ClearRecordDisp</string>
+   </property>
+  </action>
+  <action name="actionSaveRecordDisp">
+   <property name="text">
+    <string>SaveRecordDisp</string>
+   </property>
+  </action>
+  <action name="actionSaveMtlAsVTK">
+   <property name="text">
+    <string>SaveMtlAsVTK</string>
+   </property>
+  </action>
+  <action name="actionSaveRecordVTK">
+   <property name="text">
+    <string>SaveRecordVTK</string>
    </property>
   </action>
  </widget>

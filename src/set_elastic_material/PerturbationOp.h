@@ -134,6 +134,7 @@ namespace SIMULATOR{
 	  _dragCtrl = pDragCtrl(new DragCtrl(view,_perturb));
 	  _dragCtrl->setObserver(_perturb);
 	  _dragCtrl->setDragHook(_perturb);
+	  _dragCtrl->setKeyMouse(Qt::ControlModifier,Qt::RightButton);
 	  if (view != NULL){
 		_perturb->setRenderPriority(FIRST_RENDER);
 		view->addSelfRenderEle(_perturb);

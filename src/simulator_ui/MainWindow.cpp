@@ -28,7 +28,6 @@ void MainWindow::createComponents(){
   // selection, drag
   _selCtrl = pSimSelectionCtrl(new SimSelectionCtrl(_viewer,_dataModel));
   _perturb = pPerturbationCtrl(new PerturbationCtrl(_viewer,_dataModel));
-  // _DragCtrl = pDragNodeCtrl(new DragNodeCtrl(_viewer, _dataModel));
 
   pLocalframeManipulatoion mani = pLocalframeManipulatoion(new ManipulateOP(_viewer,_dataModel));
   manipulation_ctrl = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, mani));
@@ -59,6 +58,14 @@ void MainWindow::createConnections(){
   connect(_viewer,SIGNAL(updateAnimation()),_dataModel.get(),SLOT(simulate()));
   connect(_mainwindow.actionPauseSimulation,SIGNAL(triggered()),_viewer,SLOT(pauseAnimation()));
   connect(_mainwindow.actionReset,SIGNAL(triggered()),_dataModel.get(),SLOT(reset()));
+
+  // record
+  connect(_mainwindow.actionRecordDisp,SIGNAL(triggered()),_dataModel.get(),SLOT(toggleRecord()));
+  connect(_mainwindow.actionClearRecordDisp,SIGNAL(triggered()),_dataModel.get(),SLOT(clearRecord()));
+  connect(_mainwindow.actionSaveRecordDisp,SIGNAL(triggered()),this,SLOT(saveRecordDisp()));
+  connect(_mainwindow.actionSaveRecordVTK,SIGNAL(triggered()),this,SLOT(saveRecordDispVTK()));
+
+  connect(_mainwindow.actionSaveMtlAsVTK,SIGNAL(triggered()),this,SLOT(saveMtlAsVTK()));
 
 }
 
@@ -100,4 +107,25 @@ void MainWindow::loadInitFile(){
 
   const string filename = _fileDialog->load("ini");
   if(filename.size() >0) loadInitFile(filename);
+}
+
+void MainWindow::saveRecordDisp(){
+  
+  const string fname = _fileDialog->save();
+  if(fname.size() >0)
+	_fileDialog->warning(_dataModel->saveRecord(fname));
+}
+
+void MainWindow::saveRecordDispVTK(){
+  
+  const string fname = _fileDialog->save();
+  if(fname.size() >0)
+	_fileDialog->warning(_dataModel->saveRecordAsVTK(fname));
+}
+
+void MainWindow::saveMtlAsVTK(){
+
+  const string fname = _fileDialog->save();
+  if(fname.size() >0)
+	_fileDialog->warning(_dataModel->saveMtlAsVTK(fname));
 }

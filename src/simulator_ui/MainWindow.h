@@ -15,7 +15,7 @@
 #include "Manipulatoion.h"
 #include <boost/shared_ptr.hpp>
 using namespace QGLVEXT;
-#include <src/simulator_ui/ui_simulator.h>
+#include "ui_simulator.h"
 
 namespace SIMULATOR{
   
@@ -32,6 +32,9 @@ namespace SIMULATOR{
 
   public slots:
 	void loadInitFile();
+	void saveRecordDisp();
+	void saveRecordDispVTK();
+	void saveMtlAsVTK();
 	
   private:
 	Ui::MainWindow _mainwindow;
@@ -43,7 +46,6 @@ namespace SIMULATOR{
 	pDataModel _dataModel;
 	pVolObjCtrl _volObjCtrl;
 	pSimSelectionCtrl _selCtrl;
-	pDragNodeCtrl _DragCtrl;
 	pDataModelRenderCtrl _renderCtrl;
 	pAniCtrl _aniCtrl;
 
