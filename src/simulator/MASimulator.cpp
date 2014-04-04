@@ -28,7 +28,9 @@ bool MASimulator::init(const string filename){
   jsonf.readVecFile("fixed_nodes",fixed_nodes,TEXT);
   setConNodes(fixed_nodes);
 
-  jsonf.readVecFile("eigenvalues",_lambda);
+  if(jsonf.readVecFile("eigenvalues",_lambda)){
+	INFO_LOG("eigenvalues: "<<_lambda.transpose());
+  }
   jsonf.readMatFile("eigenvectors",_W);
   
   if (_eigenNum > 0 && _eigenNum < _lambda.size()){
@@ -88,6 +90,8 @@ bool MASimulator::precompute(){
 
   // _W.col(0) += VectorXd::Random(_W.rows())*_W.col(0).norm()*0.005f;
   _W = P.transpose()*_W;
+
+  INFO_LOG("eigenvalues: "<<_lambda.transpose());
 
   reset();
   return succ;

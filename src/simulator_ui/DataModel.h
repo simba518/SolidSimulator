@@ -31,6 +31,9 @@ namespace SIMULATOR{
 	}
 	pSimulator createSimulator(const string filename)const;
 	bool loadSetting(const string filename);
+	void setRecord(const bool record){
+	  _record = record;
+	}
 
 	// set fixed nodes
 	void addConNodes(const vector<int> &sel_ids){

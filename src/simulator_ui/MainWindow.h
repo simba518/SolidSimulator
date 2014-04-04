@@ -7,6 +7,7 @@
 #include <QGLViewerExt.h>
 #include <VolObjCtrl.h>
 #include <AniCtrl.h>
+#include <QInputEventRecorder.h>
 #include "PerturbationOp.h"
 #include "DataModel.h"
 #include "DataModelRender.h"
@@ -19,7 +20,7 @@ using namespace QGLVEXT;
 
 namespace SIMULATOR{
   
-  class MainWindow: public QMainWindow{
+  class MainWindow: public QMainWindow, public QInputEventRecorderObserver{
 	
 	Q_OBJECT
 	
@@ -30,7 +31,11 @@ namespace SIMULATOR{
 	void paserCommandLine();
 	void loadInitFile(const string filename);
 
-  public slots:
+  public:
+	void startReplayOperations();
+	void stopReplayOperations();
+
+  protected slots:
 	void loadInitFile();
 	void saveRecordDisp();
 	void saveRecordDispVTK();

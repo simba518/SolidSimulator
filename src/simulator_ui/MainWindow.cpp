@@ -129,3 +129,16 @@ void MainWindow::saveMtlAsVTK(){
   if(fname.size() >0)
 	_fileDialog->warning(_dataModel->saveMtlAsVTK(fname));
 }
+
+void MainWindow::startReplayOperations(){
+  
+  _viewer->startAnimation();
+  _dataModel->setRecord(true);
+}
+
+void MainWindow::stopReplayOperations(){
+
+  _viewer->stopAnimation();
+  _dataModel->setRecord(false);
+  saveRecordDispVTK();
+}
