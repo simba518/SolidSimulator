@@ -64,12 +64,14 @@ namespace SIMULATOR{
 
   protected:
 	void solve();
+	void extractReqiredModes();
 
   private:
 	const string sim_name;
 
 	pTetMesh_const _tetMesh;
 	set<int> _fixedNodes;
+	int _startMode;
 	int _eigenNum;
 
 	MatrixXd _W;

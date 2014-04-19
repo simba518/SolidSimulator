@@ -3,6 +3,7 @@
 #include <ElasticForceTetFullStVK.h>
 #include <SparseGenEigenSolver.h>
 #include <MassMatrix.h>
+#include <MatrixIO.h>
 #include <SparseMatrixTools.h>
 #include "MASimulator.h"
 
@@ -22,7 +23,9 @@ bool MASimulator::init(const string filename){
   succ &= jsonf.read("h",_h);
   succ &= jsonf.read("alpha_k",_ak);
   succ &= jsonf.read("alpha_m",_am);
-  succ &= jsonf.read("rw",_eigenNum);
+  succ &= jsonf.read("num_modes",_eigenNum);
+  succ &= jsonf.read("first_mode",_startMode);
+  _startMode = _startMode > 0 ? _startMode:0;
 
   vector<int> fixed_nodes;
   jsonf.readVecFile("fixed_nodes",fixed_nodes,TEXT);
@@ -32,14 +35,9 @@ bool MASimulator::init(const string filename){
 	INFO_LOG("eigenvalues: "<<_lambda.transpose());
   }
   jsonf.readMatFile("eigenvectors",_W);
-  
-  if (_eigenNum > 0 && _eigenNum < _lambda.size()){
+  _W *= 0.7f;
 
-	const MatrixXd tv = _W;
-	_W = tv.leftCols(_eigenNum);
-	const VectorXd tl = _lambda;
-	_lambda = tl.head(_eigenNum);
-  }
+  extractReqiredModes();
   
   return succ;
 }
@@ -82,16 +80,19 @@ bool MASimulator::precompute(){
 #ifdef WIN32
   ERROR_LOG("no arpack solver, can not compute the general eigenvalue problem.");
   const bool succ=false;
-  _W = MatrixXd::Identity(Klower.rows(),_eigenNum);
-  _lambda = VectorXd::Ones(_eigenNum);
+  _W = MatrixXd::Identity(Klower.rows(),_eigenNum+_startMode);
+  _lambda = VectorXd::Ones(_eigenNum+_startMode);
 #else
-  succ &= EigenSparseGenEigenSolver::solve(Klower,diagM,_W,_lambda,_eigenNum);
+  succ &= EigenSparseGenEigenSolver::solve(Klower,diagM,_W,_lambda,_eigenNum+_startMode);
 #endif
+
+  extractReqiredModes();
 
   // _W.col(0) += VectorXd::Random(_W.rows())*_W.col(0).norm()*0.005f;
   _W = P.transpose()*_W;
 
   INFO_LOG("eigenvalues: "<<_lambda.transpose());
+  assert(write("lambda.b",_lambda));
 
   reset();
   return succ;
@@ -121,5 +122,17 @@ void MASimulator::solve(){
 	const double d = _am+_ak*_lambda[i];
 	_v[i] = (_v[i]+_h*_F_reduced[i]-_h*_lambda[i]*_z[i])/(1+_h*d+_lambda[i]*_h*_h);
     _z[i] = _z[i]+_h*_v[i];
+  }
+}
+
+void MASimulator::extractReqiredModes(){
+
+  assert_eq(_W.cols(), _lambda.size());
+  if (_eigenNum > 0 && _eigenNum+_startMode <= _lambda.size()){
+
+	const MatrixXd tv = _W;
+	_W = tv.block(0,_startMode,_W.rows(),_eigenNum);
+	const VectorXd tl = _lambda;
+	_lambda = tl.segment(_startMode, _eigenNum);
   }
 }

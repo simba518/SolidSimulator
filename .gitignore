@@ -1,4 +1,6 @@
 .qglviewer.xml
-*tempt
+*tempt*
 *.b
 *.out
+*/*tempt*
+*/*/*tempt*

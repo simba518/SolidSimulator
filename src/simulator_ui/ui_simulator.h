@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'simulator.ui'
 **
-** Created: Thu Apr 3 19:06:18 2014
+** Created: Sat Apr 19 19:16:09 2014
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -62,6 +62,8 @@ public:
     QAction *actionSaveRecordDisp;
     QAction *actionSaveMtlAsVTK;
     QAction *actionSaveRecordVTK;
+    QAction *actionRestVolMesh;
+    QAction *actionGround;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout_2;
     QSplitter *splitter_2;
@@ -158,6 +160,12 @@ public:
         actionSaveMtlAsVTK->setObjectName(QString::fromUtf8("actionSaveMtlAsVTK"));
         actionSaveRecordVTK = new QAction(MainWindow);
         actionSaveRecordVTK->setObjectName(QString::fromUtf8("actionSaveRecordVTK"));
+        actionRestVolMesh = new QAction(MainWindow);
+        actionRestVolMesh->setObjectName(QString::fromUtf8("actionRestVolMesh"));
+        actionRestVolMesh->setCheckable(true);
+        actionGround = new QAction(MainWindow);
+        actionGround->setObjectName(QString::fromUtf8("actionGround"));
+        actionGround->setCheckable(true);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         verticalLayout_2 = new QVBoxLayout(centralwidget);
@@ -213,6 +221,8 @@ public:
         menuView->addAction(actionVolMesh);
         menuView->addAction(actionObjMesh);
         menuView->addAction(actionConNodes);
+        menuView->addAction(actionRestVolMesh);
+        menuView->addAction(actionGround);
         menuSimulation->addAction(actionPrepareSimulation);
         menuSimulation->addAction(actionPauseSimulation);
         menuSimulation->addAction(actionReset);
@@ -271,6 +281,8 @@ public:
         actionSaveRecordDisp->setText(QApplication::translate("MainWindow", "SaveRecordDisp", 0, QApplication::UnicodeUTF8));
         actionSaveMtlAsVTK->setText(QApplication::translate("MainWindow", "SaveMtlAsVTK", 0, QApplication::UnicodeUTF8));
         actionSaveRecordVTK->setText(QApplication::translate("MainWindow", "SaveRecordVTK", 0, QApplication::UnicodeUTF8));
+        actionRestVolMesh->setText(QApplication::translate("MainWindow", "RestVolMesh", 0, QApplication::UnicodeUTF8));
+        actionGround->setText(QApplication::translate("MainWindow", "Ground", 0, QApplication::UnicodeUTF8));
         menu_File->setTitle(QApplication::translate("MainWindow", "&File", 0, QApplication::UnicodeUTF8));
         menuView->setTitle(QApplication::translate("MainWindow", "View", 0, QApplication::UnicodeUTF8));
         menuSimulation->setTitle(QApplication::translate("MainWindow", "Simulation", 0, QApplication::UnicodeUTF8));

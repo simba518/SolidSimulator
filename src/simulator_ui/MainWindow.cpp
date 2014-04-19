@@ -31,6 +31,9 @@ void MainWindow::createComponents(){
 
   pLocalframeManipulatoion mani = pLocalframeManipulatoion(new ManipulateOP(_viewer,_dataModel));
   manipulation_ctrl = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, mani));
+
+  _viewer->drawGrid(1.0,10);
+
 }
 
 void MainWindow::createConnections(){
@@ -52,6 +55,8 @@ void MainWindow::createConnections(){
   connect(_mainwindow.actionObjMesh,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowObj())); 
   connect(_mainwindow.actionVolMesh,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowVol()));
   connect(_mainwindow.actionConNodes,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowConNodes())); 
+  connect(_mainwindow.actionRestVolMesh,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowRestVol()));
+  connect(_mainwindow.actionGround,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowGround()));
 
   // simulation
   connect(_mainwindow.actionSimulate,SIGNAL(triggered()),_dataModel.get(),SLOT(simulate()));
@@ -95,6 +100,15 @@ void MainWindow::loadInitFile(const string filename){
 	_perturb->setPerturCompilance(con_penalty);
 	INFO_LOG("con_penalty: "<<con_penalty );
 	_fileDialog->warning(succ);
+
+	// load ground
+	Vector3f trans, rotate;
+	double f = 0.0f;
+	if (jsonf.read3d("translate_ground",trans) &&
+		jsonf.read3d("rot_ground_axi",rotate) &&
+		jsonf.read("rot_ground_angle",f)){
+	  _renderCtrl->setGround(trans, rotate, f);
+	}
 
   }else{
 

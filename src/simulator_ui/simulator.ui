@@ -80,6 +80,8 @@
     <addaction name="actionVolMesh"/>
     <addaction name="actionObjMesh"/>
     <addaction name="actionConNodes"/>
+    <addaction name="actionRestVolMesh"/>
+    <addaction name="actionGround"/>
    </widget>
    <widget class="QMenu" name="menuSimulation">
     <property name="title">
@@ -323,6 +325,22 @@
   <action name="actionSaveRecordVTK">
    <property name="text">
     <string>SaveRecordVTK</string>
+   </property>
+  </action>
+  <action name="actionRestVolMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>RestVolMesh</string>
+   </property>
+  </action>
+  <action name="actionGround">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Ground</string>
    </property>
   </action>
  </widget>
