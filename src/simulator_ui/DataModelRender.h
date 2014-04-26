@@ -19,7 +19,9 @@ namespace SIMULATOR{
 							   VOL=2,
 							   CON_NODES=4,
 							   REST_VOL=8,
-							   GROUND = 16};
+							   REST_OBJ = 16,
+							   GROUND = 32,
+							   SCENE = 64};
   
   /**
    * @class DataModelRender render all the data in DataModel.
@@ -56,7 +58,9 @@ namespace SIMULATOR{
 	  if (_renderType & VOL) drawVolMesh();
 	  if (_renderType & CON_NODES) drawConstraints();
 	  if (_renderType & REST_VOL) drawRestVolMesh();
+	  if (_renderType & REST_OBJ) drawRestObjMesh();
 	  if (_renderType & GROUND)	drawGround();
+	  if (_renderType & SCENE)	drawScene();
 	}
 	pTextForRender getTextForRender()const{
 	  return _text;
@@ -105,8 +109,15 @@ namespace SIMULATOR{
 	}
 	void drawRestVolMesh()const{
 	  const pTetMesh_const tetmesh = _dataModel->getVolMesh();
-	  if (tetmesh)
-		UTILITY::draw(tetmesh);
+	  if (tetmesh) UTILITY::draw(tetmesh);
+	}
+	void drawRestObjMesh()const{
+	  const pObjmesh_const objmesh = _dataModel->getRestObjMesh();
+	  if(objmesh) UTILITY::draw(objmesh);
+	}
+	void drawScene()const{
+	  const pObjmesh_const objmesh = _dataModel->getScene();
+	  if(objmesh) UTILITY::draw(objmesh);
 	}
 	void drawConstraints()const{
 
@@ -152,7 +163,7 @@ namespace SIMULATOR{
 	DataModelRenderCtrl(pQGLViewerExt viewer,pDataModel dm):_viewer(viewer){
   
 	  _modelRender=pDataModelRender(new DataModelRender(viewer,dm));
-	  _modelRender->setRenderType(OBJ|VOL|CON_NODES);
+	  _modelRender->setRenderType(OBJ|VOL|CON_NODES|SCENE);
 	  if(_viewer != NULL){
 		_viewer->addSelfRenderEle(_modelRender);
 		_viewer->addTextForRender(_modelRender->getTextForRender());
@@ -167,7 +178,9 @@ namespace SIMULATOR{
 	void toggleShowVol(){ toggleShowType(VOL); }
 	void toggleShowConNodes(){ toggleShowType(CON_NODES); }
 	void toggleShowRestVol(){ toggleShowType(REST_VOL); }
+	void toggleShowRestObj(){ toggleShowType(REST_OBJ); }
 	void toggleShowGround(){ toggleShowType(GROUND); }
+	void showGround(const bool show){showType(show, GROUND);}
 
   protected:
 	void showType(bool show, DATA_MODEL_RENDER_TYPE type){

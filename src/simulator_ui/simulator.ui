@@ -67,9 +67,11 @@
     <addaction name="actionLoadInitFile"/>
     <addaction name="actionLoadObj"/>
     <addaction name="actionLoadVol"/>
+    <addaction name="actionSaveVol"/>
     <addaction name="actionSaveRecordDisp"/>
     <addaction name="actionSaveMtlAsVTK"/>
     <addaction name="actionSaveRecordVTK"/>
+    <addaction name="actionSaveConNodes"/>
     <addaction name="actionPrintSelected"/>
     <addaction name="actionExit"/>
    </widget>
@@ -81,6 +83,7 @@
     <addaction name="actionObjMesh"/>
     <addaction name="actionConNodes"/>
     <addaction name="actionRestVolMesh"/>
+    <addaction name="actionRestObjMesh"/>
     <addaction name="actionGround"/>
    </widget>
    <widget class="QMenu" name="menuSimulation">
@@ -110,11 +113,6 @@
     <string>Q</string>
    </property>
   </action>
-  <action name="actionSimulate">
-   <property name="text">
-    <string>Simulate</string>
-   </property>
-  </action>
   <action name="actionLoadObj">
    <property name="text">
     <string>LoadObj</string>
@@ -123,26 +121,6 @@
   <action name="actionLoadVol">
    <property name="text">
     <string>LoadVol</string>
-   </property>
-  </action>
-  <action name="actionSaveConNodes">
-   <property name="text">
-    <string>SaveConNodes</string>
-   </property>
-  </action>
-  <action name="actionLoadConNodes">
-   <property name="text">
-    <string>LoadConNodes</string>
-   </property>
-  </action>
-  <action name="actionSelectNodes">
-   <property name="text">
-    <string>SelectNodes</string>
-   </property>
-  </action>
-  <action name="actionSelectTets">
-   <property name="text">
-    <string>SelectTets</string>
    </property>
   </action>
   <action name="actionVolMesh">
@@ -173,14 +151,6 @@
     <string>W</string>
    </property>
   </action>
-  <action name="actionTetGroups">
-   <property name="text">
-    <string>TetGroups</string>
-   </property>
-   <property name="shortcut">
-    <string>T</string>
-   </property>
-  </action>
   <action name="actionConNodes">
    <property name="checkable">
     <bool>true</bool>
@@ -190,11 +160,6 @@
    </property>
    <property name="text">
     <string>ConNodes</string>
-   </property>
-  </action>
-  <action name="actionMaterialGroups">
-   <property name="text">
-    <string>MaterialGroups</string>
    </property>
   </action>
   <action name="actionPrepareSimulation">
@@ -216,11 +181,6 @@
     <string>Space</string>
    </property>
   </action>
-  <action name="actionStopSimulation">
-   <property name="text">
-    <string>StopSimulation</string>
-   </property>
-  </action>
   <action name="actionReset">
    <property name="text">
     <string>Reset</string>
@@ -229,71 +189,12 @@
     <string>R</string>
    </property>
   </action>
-  <action name="actionFixSelectedTets">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>FixSelectedTets</string>
-   </property>
-  </action>
-  <action name="actionSaveMaterial">
-   <property name="text">
-    <string>SaveMaterial</string>
-   </property>
-  </action>
   <action name="actionPrintSelected">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
     <string>PrintSelected</string>
-   </property>
-  </action>
-  <action name="actionLoadMaterial">
-   <property name="text">
-    <string>LoadMaterial</string>
-   </property>
-  </action>
-  <action name="actionRecord">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Record</string>
-   </property>
-   <property name="shortcut">
-    <string>C</string>
-   </property>
-  </action>
-  <action name="actionSaveRecordZ">
-   <property name="text">
-    <string>SaveRecordZ</string>
-   </property>
-  </action>
-  <action name="actionSaveEigenValues">
-   <property name="text">
-    <string>SaveEigenValues</string>
-   </property>
-  </action>
-  <action name="actionSaveEigenVectors">
-   <property name="text">
-    <string>SaveEigenVectors</string>
-   </property>
-  </action>
-  <action name="actionClearRecordedZ">
-   <property name="text">
-    <string>ClearRecordedZ</string>
-   </property>
-  </action>
-  <action name="actionSaveMaterialAsHinp">
-   <property name="text">
-    <string>SaveMaterialAsHinp</string>
-   </property>
-  </action>
-  <action name="actionInterpolateMaterials">
-   <property name="text">
-    <string>InterpolateMaterials</string>
    </property>
   </action>
   <action name="actionRecordDisp">
@@ -341,6 +242,27 @@
    </property>
    <property name="text">
     <string>Ground</string>
+   </property>
+  </action>
+  <action name="actionSaveVol">
+   <property name="text">
+    <string>SaveVol</string>
+   </property>
+  </action>
+  <action name="actionRestObjMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>RestObjMesh</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionSaveConNodes">
+   <property name="text">
+    <string>SaveConNodes</string>
    </property>
   </action>
  </widget>

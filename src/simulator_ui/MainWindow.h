@@ -39,7 +39,9 @@ namespace SIMULATOR{
 	void saveRecordDisp();
 	void saveRecordDispVTK();
 	void saveMtlAsVTK();
-	
+	void saveVolMesh();
+	void saveConNodes();
+
   private:
 	Ui::MainWindow _mainwindow;
 	pQGLViewerExt _viewer;

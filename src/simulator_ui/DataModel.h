@@ -66,6 +66,12 @@ namespace SIMULATOR{
 	const pTetMesh_const getVolMesh()const{
 	  return _volObj->getTetMesh();
 	}
+	const pObjmesh_const getRestObjMesh()const{
+	  return _restObj;
+	}
+	const pObjmesh_const getScene()const{
+	  return scene;
+	}
 	const VectorXd &getU()const{
 	  static VectorXd tempt_u;
 	  if (_simulator){
@@ -97,6 +103,12 @@ namespace SIMULATOR{
 		return _volObj->getTetMesh()->writeElasticMtlVTK(filename);
 	  return false;
 	}
+	bool saveVolMesh(const string filename)const{
+	  if(_volObj && _volObj->getTetMesh())
+		return _volObj->getTetMesh()->write(filename,getU());
+	  return false;
+	}
+	bool saveConNodes(const string filename)const;
 
   public slots:
 	void prepareSimulation();
@@ -122,10 +134,12 @@ namespace SIMULATOR{
 	PartialConstraints _partialCon_x0;
 	pSimulator _simulator;
 	pTetMeshEmbeding _volObj;
+	pObjmesh _restObj;
 	VectorXd rest_shape;
 	int steps; // number of steps for each simulation.
 	bool _record;
 	vector<VectorXd> _recorded_vol_u;
+	pObjmesh scene;
   };
   
   typedef boost::shared_ptr<DataModel> pDataModel;

@@ -32,8 +32,6 @@ void MainWindow::createComponents(){
   pLocalframeManipulatoion mani = pLocalframeManipulatoion(new ManipulateOP(_viewer,_dataModel));
   manipulation_ctrl = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, mani));
 
-  _viewer->drawGrid(1.0,10);
-
 }
 
 void MainWindow::createConnections(){
@@ -42,13 +40,14 @@ void MainWindow::createConnections(){
 
   connect(_mainwindow.actionLoadObj, SIGNAL(triggered()), _volObjCtrl.get(), SLOT(loadObjMesh()));
   connect(_mainwindow.actionLoadVol, SIGNAL(triggered()), _volObjCtrl.get(), SLOT(loadVolMesh()));
+  connect(_mainwindow.actionSaveVol, SIGNAL(triggered()), this, SLOT(saveVolMesh()));
+
   connect(_volObjCtrl.get(),SIGNAL(resetSceneMsg(double,double,double,double,double,double)),
 		  _viewer,SLOT(resetSceneBoundBox(double,double,double,double,double,double)));
   connect(_mainwindow.actionPrepareSimulation,SIGNAL(triggered()),
 		  _dataModel.get(),SLOT(prepareSimulation()));
   
   // selection
-  connect(_mainwindow.actionSelectNodes, SIGNAL(triggered()), _selCtrl.get(), SLOT(selectNodes()));
   connect(_mainwindow.actionPrintSelected, SIGNAL(triggered()), _selCtrl.get(), SLOT(togglePrintSelEle()));
 
   // render
@@ -56,10 +55,10 @@ void MainWindow::createConnections(){
   connect(_mainwindow.actionVolMesh,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowVol()));
   connect(_mainwindow.actionConNodes,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowConNodes())); 
   connect(_mainwindow.actionRestVolMesh,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowRestVol()));
+  connect(_mainwindow.actionRestObjMesh,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowRestObj()));
   connect(_mainwindow.actionGround,SIGNAL(triggered()),_renderCtrl.get(),SLOT(toggleShowGround()));
 
   // simulation
-  connect(_mainwindow.actionSimulate,SIGNAL(triggered()),_dataModel.get(),SLOT(simulate()));
   connect(_viewer,SIGNAL(updateAnimation()),_dataModel.get(),SLOT(simulate()));
   connect(_mainwindow.actionPauseSimulation,SIGNAL(triggered()),_viewer,SLOT(pauseAnimation()));
   connect(_mainwindow.actionReset,SIGNAL(triggered()),_dataModel.get(),SLOT(reset()));
@@ -69,8 +68,8 @@ void MainWindow::createConnections(){
   connect(_mainwindow.actionClearRecordDisp,SIGNAL(triggered()),_dataModel.get(),SLOT(clearRecord()));
   connect(_mainwindow.actionSaveRecordDisp,SIGNAL(triggered()),this,SLOT(saveRecordDisp()));
   connect(_mainwindow.actionSaveRecordVTK,SIGNAL(triggered()),this,SLOT(saveRecordDispVTK()));
-
   connect(_mainwindow.actionSaveMtlAsVTK,SIGNAL(triggered()),this,SLOT(saveMtlAsVTK()));
+  connect(_mainwindow.actionSaveConNodes,SIGNAL(triggered()),this,SLOT(saveConNodes()));
 
 }
 
@@ -108,6 +107,8 @@ void MainWindow::loadInitFile(const string filename){
 		jsonf.read3d("rot_ground_axi",rotate) &&
 		jsonf.read("rot_ground_angle",f)){
 	  _renderCtrl->setGround(trans, rotate, f);
+	  _renderCtrl->showGround(true);
+	  _mainwindow.actionGround->setChecked(true);
 	}
 
   }else{
@@ -142,6 +143,20 @@ void MainWindow::saveMtlAsVTK(){
   const string fname = _fileDialog->save();
   if(fname.size() >0)
 	_fileDialog->warning(_dataModel->saveMtlAsVTK(fname));
+}
+
+void MainWindow::saveVolMesh(){
+  
+  const string fname = _fileDialog->save();
+  if(fname.size() >0)
+	_fileDialog->warning(_dataModel->saveVolMesh(fname));
+}
+
+void MainWindow::saveConNodes(){
+  
+  const string fname = _fileDialog->save();
+  if(fname.size() >0)
+	_fileDialog->warning(_dataModel->saveConNodes(fname));
 }
 
 void MainWindow::startReplayOperations(){

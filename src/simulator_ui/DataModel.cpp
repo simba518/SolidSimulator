@@ -6,9 +6,11 @@
 using namespace SIMULATOR;
 
 DataModel::DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
+
   assert(embeding);
   steps = 1;
   _record = false;
+  _restObj = pObjmesh(new UTILITY::Objmesh());
 }
 
 pSimulator DataModel::createSimulator(const string filename)const{
@@ -74,6 +76,18 @@ bool DataModel::loadSetting(const string filename){
 		addConNodes(fixed_nodes);
 	  }
 	}
+  }
+
+  string objfile;
+  if (jsonf.readFilePath("obj_file", objfile)){
+	_restObj->load(objfile);
+	_restObj->setMtl(ObjMtl());
+  }
+
+  string sf;
+  if (jsonf.readFilePath("scene", sf,true)){
+	if (!scene) scene = pObjmesh(new Objmesh());
+	scene->load(sf);
   }
 
   print();
@@ -182,4 +196,14 @@ bool DataModel::simulate(){
   ERROR_LOG_COND("simulation failed.",succ);
 
   return succ;
+}
+
+bool DataModel::saveConNodes(const string filename)const{
+
+  const vector<set<int> > &con_nodes = getConNodes();
+  vector<int> nodes;
+  for (int i = 0; i < con_nodes.size(); ++i)
+    BOOST_FOREACH(const int ele, con_nodes[i])
+	  nodes.push_back(ele);
+  return writeVec(filename,nodes, UTILITY::TEXT);
 }
