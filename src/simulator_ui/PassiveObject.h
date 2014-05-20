@@ -25,12 +25,17 @@ namespace SIMULATOR{
 	  current_center.resize(3,1);
 	  current_center.setZero();
 	  scale = 1.0f;
+	  collision_force_penalty = 10000.0f;
 	  obj = pObjmesh(new Objmesh());
 	}
 	bool load(const string obj_file){
 	  bool succ = obj->load(obj_file);
 	  initial_center = obj->getCenter();
 	  return succ;
+	}
+	void setCollisionPenalty(double p){
+	  assert_gt(p,0.0f);
+	  collision_force_penalty = p;
 	}
 	virtual void draw()const;
 
@@ -55,7 +60,7 @@ namespace SIMULATOR{
 	  current_center(1,0)=initial_center[1] + y;
 	  current_center(2,0) =initial_center[2] + z;
 	}
-	virtual void collision(pTetMesh_const tet_mesh, VectorXd &coll_forces){
+	virtual void collision(pTetMesh_const tet_mesh, const VectorXd &u, VectorXd &coll_forces){
 	  if (tet_mesh){
 		coll_forces.resize(tet_mesh->nodes().size()*3);
 		coll_forces.setZero();
@@ -69,12 +74,13 @@ namespace SIMULATOR{
 	  UTILITY::draw(obj);
 	}
 
-  private:
+  protected:
 	Vector3d initial_center;
 	Matrix<double,3,-1> current_center;
 	double scale;
 	pObjmesh obj;
 	bool dragged;
+	double collision_force_penalty;
   };
   typedef boost::shared_ptr<PassiveObject> pPassiveObject;
 
@@ -83,12 +89,15 @@ namespace SIMULATOR{
   public:
 	PassiveBall(pQGLViewerExt view, const int slice = 100):
 	  PassiveObject(view),slice_num(slice){}
-	void collision(pTetMesh_const tet_mesh, VectorXd &coll_forces);
+	void collision(pTetMesh_const tet_mesh, const VectorXd &u, VectorXd &coll_forces);
 
   protected:
 	void drawMesh()const{
 	  PassiveObject::drawMesh();
 	  // gluSphere(gluNewQuadric(), 1.0, slice_num, slice_num);///@bug failed to draw.
+	}
+	double radius()const{
+	  return 0.3;
 	}
 
   private:

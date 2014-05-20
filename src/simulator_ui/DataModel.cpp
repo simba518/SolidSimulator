@@ -181,6 +181,13 @@ void DataModel::resetPartialCon(){
 bool DataModel::simulate(){
 
   bool succ = false;
+
+  if (_passiveObject && _simulator && _volObj && _volObj->getTetMesh()){
+	static VectorXd f_ext;
+	_passiveObject->collision(_volObj->getTetMesh(),getU(),f_ext);
+	_simulator->setExtForce(f_ext);
+  }
+
   if(_simulator){
 	succ = _simulator->forward();
 	for (int i = 1; i < steps; ++i){
@@ -207,4 +214,3 @@ bool DataModel::saveConNodes(const string filename)const{
 	  nodes.push_back(ele);
   return writeVec(filename,nodes, UTILITY::TEXT);
 }
-

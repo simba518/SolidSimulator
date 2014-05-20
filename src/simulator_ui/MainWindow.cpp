@@ -120,7 +120,12 @@ void MainWindow::loadInitFile(const string filename){
 
 	string passive_obj_file;
 	if (_passiveObject&&jsonf.readFilePath("passive_object", passive_obj_file, true)){
-	  _passiveObject->load(passive_obj_file);
+	  if(_passiveObject->load(passive_obj_file)){
+		double collision_penalty = 1.0f;
+		if (jsonf.read("collision_penalty", collision_penalty, 1.0)){
+		  _passiveObject->setCollisionPenalty(collision_penalty);
+		}
+	  }
 	}
 
   }else{
