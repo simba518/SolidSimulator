@@ -2,6 +2,7 @@ SET(APPNAME simulator_ui)
 
 SET(NONE_QT_CPP
   main.cpp
+  PassiveObject.cpp
 )
 
 SET(UI_SOURCES

@@ -207,3 +207,4 @@ bool DataModel::saveConNodes(const string filename)const{
 	  nodes.push_back(ele);
   return writeVec(filename,nodes, UTILITY::TEXT);
 }
+

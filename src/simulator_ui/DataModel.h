@@ -10,6 +10,7 @@
 #include <JsonFilePaser.h>
 #include <Simulator.h>
 #include <PartialConstraints.h>
+#include "PassiveObject.h"
 using namespace std;
 using namespace UTILITY;
 
@@ -25,6 +26,9 @@ namespace SIMULATOR{
 
   public:
 	DataModel(pTetMeshEmbeding embeding);
+	void setPassiveObject(pPassiveObject p){
+	  this->_passiveObject = p;
+	}
 	const string simulatorName()const{
 	  if (_simulator) return _simulator->name();
 	  return "no simulator.";
@@ -140,6 +144,7 @@ namespace SIMULATOR{
 	bool _record;
 	vector<VectorXd> _recorded_vol_u;
 	pObjmesh scene;
+	pPassiveObject _passiveObject;
   };
   
   typedef boost::shared_ptr<DataModel> pDataModel;

@@ -54,6 +54,9 @@ namespace SIMULATOR{
 	pSimSelectionCtrl _selCtrl;
 	pDataModelRenderCtrl _renderCtrl;
 
+	pLocalframeManipulatoionCtrl manipulation_passive_obj;
+	pPassiveObject _passiveObject;
+
 	string init_filename;
   };
   

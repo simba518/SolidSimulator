@@ -28,9 +28,16 @@ void MainWindow::createComponents(){
   // selection, drag
   _selCtrl = pSimSelectionCtrl(new SimSelectionCtrl(_viewer,_dataModel));
   _perturb = pPerturbationCtrl(new PerturbationCtrl(_viewer,_dataModel));
-
   pLocalframeManipulatoion mani = pLocalframeManipulatoion(new ManipulateOP(_viewer,_dataModel));
   manipulation_ctrl = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, mani));
+  manipulation_ctrl->setEnable(false);
+
+  // passive objects
+  _passiveObject = pPassiveObject(new PassiveBall(_viewer));
+  manipulation_passive_obj = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, _passiveObject));
+  manipulation_passive_obj->setEnable(true);
+  _viewer->addSelfRenderEle(_passiveObject);
+  _dataModel->setPassiveObject(_passiveObject);
 
 }
 
@@ -109,6 +116,11 @@ void MainWindow::loadInitFile(const string filename){
 	  _renderCtrl->setGround(trans, rotate, f);
 	  _renderCtrl->showGround(true);
 	  _mainwindow.actionGround->setChecked(true);
+	}
+
+	string passive_obj_file;
+	if (_passiveObject&&jsonf.readFilePath("passive_object", passive_obj_file, true)){
+	  _passiveObject->load(passive_obj_file);
 	}
 
   }else{
