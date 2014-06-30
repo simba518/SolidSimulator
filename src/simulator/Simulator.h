@@ -52,6 +52,9 @@ namespace SIMULATOR{
 	virtual bool forward() = 0;
 
 	virtual const VectorXd &getFullDisp()const = 0;
+	virtual const VectorXd &getFullVelocity()const = 0;
+	virtual VectorXd &getFullDisp() = 0;
+	virtual VectorXd &getFullVelocity() = 0;
 	virtual bool computeElasticForce(const VectorXd &u,VectorXd &f)const{
 	  return false;
 	}

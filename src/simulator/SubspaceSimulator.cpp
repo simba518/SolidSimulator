@@ -11,5 +11,6 @@ bool SubspaceSimulator::forward(){
 
   bool succ = simulator->forward();
   succ &= stvkModel->computeFullDisp(simulator->getQ(),full_disp);
+  succ &= stvkModel->computeFullDisp(simulator->getV(),full_velocity);
   return succ;
 }

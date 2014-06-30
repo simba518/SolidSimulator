@@ -68,6 +68,13 @@ namespace SIMULATOR{
 	bool forward(){return simulator->forward();}
 
 	const VectorXd &getFullDisp()const{return simulator->getU();}
+	const VectorXd &getFullVelocity()const{
+	  return simulator->getV();
+	}
+	VectorXd &getFullDisp(){return simulator->getU();}
+	VectorXd &getFullVelocity(){
+	  return simulator->getV();
+	}
 	bool computeElasticForce(const VectorXd &u,VectorXd &f)const{
 	  if (stvkModel)
 		return stvkModel->evaluateF(u,f);

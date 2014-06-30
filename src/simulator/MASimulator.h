@@ -30,6 +30,8 @@ namespace SIMULATOR{
 	  if(_tetMesh){
 		_u.resize(_tetMesh->nodes().size()*3);
 		_u.setZero();
+		_v_full.resize(_tetMesh->nodes().size()*3);
+		_v_full.setZero();
 
 		_v.resize(_W.cols());
 		_v.setZero(_W.cols());
@@ -61,6 +63,15 @@ namespace SIMULATOR{
 	const VectorXd &getFullDisp()const{
 	  return _u;
 	}
+	const VectorXd &getFullVelocity()const{
+	  return _v_full;
+	}
+	VectorXd &getFullDisp(){
+	  return _u;
+	}
+	VectorXd &getFullVelocity(){
+	  return _v_full;
+	}
 
   protected:
 	void solve();
@@ -78,7 +89,7 @@ namespace SIMULATOR{
 	VectorXd _lambda;
 
 	double _h,_ak,_am;
-	VectorXd _z,_v,_F_reduced,_u, _fext;
+	VectorXd _z,_v,_F_reduced,_u,_v_full, _fext;
   };
   typedef boost::shared_ptr<MASimulator> pMASimulator;
   

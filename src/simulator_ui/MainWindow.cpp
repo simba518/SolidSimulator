@@ -30,14 +30,14 @@ void MainWindow::createComponents(){
   _perturb = pPerturbationCtrl(new PerturbationCtrl(_viewer,_dataModel));
   pLocalframeManipulatoion mani = pLocalframeManipulatoion(new ManipulateOP(_viewer,_dataModel));
   manipulation_ctrl = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, mani));
-  manipulation_ctrl->setEnable(false);
+  manipulation_ctrl->setEnable(true);
 
   // passive objects
-  _passiveObject = pPassiveObject(new PassiveBall(_viewer));
-  manipulation_passive_obj = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, _passiveObject));
-  manipulation_passive_obj->setEnable(true);
-  _viewer->addSelfRenderEle(_passiveObject);
-  _dataModel->setPassiveObject(_passiveObject);
+  // _passiveObject = pPassiveObject(new PassiveBall(_viewer));
+  // manipulation_passive_obj = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, _passiveObject));
+  // manipulation_passive_obj->setEnable(true);
+  // _viewer->addSelfRenderEle(_passiveObject);
+  // _dataModel->setPassiveObject(_passiveObject);
 
 }
 

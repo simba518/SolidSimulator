@@ -8,8 +8,8 @@ using namespace SIMULATOR;
 int main(int argc, char *argv[]){
 
   // open init json file
-  const string ini_file = "./data/dino/simu_cubature.ini";
-  // const string ini_file = "./data/dino/simu_full.ini";
+  // const string ini_file = "./data/dino/simu_cubature.ini";
+  const string ini_file = "./data/dino/simu_full.ini";
   JsonFilePaser jsonf;
   bool succ = jsonf.open(ini_file);
   assert(succ);
@@ -28,9 +28,9 @@ int main(int argc, char *argv[]){
 	assert(succ);
   }
 
-  pReducedElasticModel elas_m = pReducedElasticModel(new CubaturedElasticModel());
-  pSimulator simulator = pSimulator(new SubspaceSimulator(elas_m,string("cubature")));
-  // pSimulator simulator = pSimulator(new FullStVKSimulator());
+  // pReducedElasticModel elas_m = pReducedElasticModel(new CubaturedElasticModel());
+  // pSimulator simulator = pSimulator(new SubspaceSimulator(elas_m,string("cubature")));
+  pSimulator simulator = pSimulator(new FullStVKSimulator());
   { // init simulator
 	succ = simulator->init(ini_file);
 	assert(succ);

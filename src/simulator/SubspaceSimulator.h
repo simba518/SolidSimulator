@@ -42,6 +42,8 @@ namespace SIMULATOR{
 	  if (stvkModel){
 		full_disp.resize(stvkModel->fullDim());
 		full_disp.setZero();
+		full_velocity.resize(stvkModel->fullDim());
+		full_velocity.setZero();
 	  }
 	  return succ;
 	}
@@ -51,6 +53,8 @@ namespace SIMULATOR{
 	  if (stvkModel){
 		full_disp.resize(stvkModel->fullDim());
 		full_disp.setZero();
+		full_velocity.resize(stvkModel->fullDim());
+		full_velocity.setZero();
 	  }
 	}
 
@@ -73,6 +77,15 @@ namespace SIMULATOR{
 	const VectorXd &getFullDisp()const{
 	  return full_disp;
 	}
+	const VectorXd &getFullVelocity()const{
+	  return full_velocity;
+	}
+	VectorXd &getFullDisp(){
+	  return full_disp;
+	}
+	VectorXd &getFullVelocity(){
+	  return full_velocity;
+	}
 	bool computeElasticForce(const VectorXd &u,VectorXd &f)const{
 	  bool succ = false;
 	  if (stvkModel){
@@ -90,6 +103,7 @@ namespace SIMULATOR{
 	pReducedElasticModel stvkModel;
 	pReducedSimulator simulator;
 	VectorXd full_disp;
+	VectorXd full_velocity;
   };
   
   typedef boost::shared_ptr<SubspaceSimulator> pSubspaceSimulator;

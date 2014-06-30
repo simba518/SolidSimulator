@@ -108,6 +108,8 @@ bool MASimulator::forward(){
   solve();
   assert_eq(_W.cols(),_z.size());
   _u = _W*_z;
+  _v_full = _W*_v;
+
   return true;
 }
 
