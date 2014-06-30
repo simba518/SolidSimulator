@@ -1,0 +1,70 @@
+\documentclass[9pt]{extarticle}
+
+\usepackage[hmargin=0.5in,tmargin=0.5in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{subfigure}
+
+\usepackage{cleveref}
+\usepackage{color}
+\newcommand{\TODO}[1]{\textcolor{red}{#1}}
+
+\newcommand{\FPP}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\argmin}{\operatornamewithlimits{arg\ min}}
+\author{Siwang Li}
+
+\title{implicit integration}
+
+%% document begin here
+\begin{document}
+\maketitle
+
+\setlength{\parskip}{0.5ex}
+
+\section{Integration}
+\begin{equation}
+  M\ddot{u} + (\alpha_mM + \alpha_kK)\dot{u}+f(u) = f_{ext}
+\end{equation}
+
+\begin{equation}
+  M \frac{u_{k+1}-2u_k+u_{k-1}}{h^2} + (\alpha_mM + \alpha_kK)\frac{u_{k+1}-u_{k}}{h}+f(u_{k}+hv_{k+1}) = f_{ext}
+\end{equation}
+
+\begin{equation}
+  v_{k+1} = \frac{u_{k+1}-u_{k}}{h}
+\end{equation}
+
+\begin{equation}
+  f(u_{k}+hv_{k+1}) = f(u_k) + hKv_{k+1} = f(u_k)+K({u_{k+1}-u_{k}})
+\end{equation}
+
+\begin{equation} 
+  (\frac{1}{h^2}M + \frac{(\alpha_mM + \alpha_kK)}{h}+K)u_{k+1} = f_{ext}-(M\frac{-2u_k+u_{k-1}}{h^2}-\frac{(\alpha_mM + \alpha_kK)}{h}u_k+f(u_k)-Ku_k)
+\end{equation}
+
+\begin{equation}
+  A = (\frac{1}{h^2}M + \frac{(\alpha_mM + \alpha_kK)}{h}+K)
+\end{equation}
+
+\begin{equation} 
+  b = f_{ext}-(M\frac{-2u_k+u_{k-1}}{h^2}-\frac{(\alpha_mM + \alpha_kK)}{h}u_k+f(u_k)-Ku_k)
+\end{equation}
+
+\begin{equation}
+  A (x_{k+1}-x_0) = b
+\end{equation}
+
+\begin{equation}
+  A x_{k+1} = b+Ax_0
+\end{equation}
+
+\begin{equation}
+  u_{k+1} = x_{k+1}-x_0
+\end{equation}
+
+\begin{equation}
+  v_{k+1} = \frac{u_{k+1}-u_{k}}{h}
+\end{equation}
+
+\end{document}
