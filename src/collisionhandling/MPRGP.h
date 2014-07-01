@@ -35,19 +35,26 @@ struct ScalarUtil<double> {
 };
 
 template <typename T>
-struct FixedSparseMatrix:public Eigen::SparseMatrix<T>{
+struct FixedSparseMatrix{
 public:
+  FixedSparseMatrix(const Eigen::SparseMatrix<T> &M):A(M){}
   template <typename VEC,typename VEC_OUT>
   void multiply(const VEC& x,VEC_OUT& result)const{
-	result = (*this)*x;
+	result = A*x;
+  }
+  int rows()const{
+	return A.rows();
   }
   double diag(const int i)const{
-	return (*this)(i,i);
+	assert(false);
+	// return (*this)(i,i);
   }
   double funValue(const VectorXd &x)const{
 	printf("unimplemented function is called\n");
 	return 0.0f;
   }
+protected:
+  const Eigen::SparseMatrix<T> &A;
 };
 
 // Iteration callback

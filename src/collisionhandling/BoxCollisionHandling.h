@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <FullSimulator.h>
+#include <Eigen/UmfPackSupport>
 #include "MPRGP.h"
 
 namespace SIMULATOR{
@@ -15,8 +16,32 @@ namespace SIMULATOR{
   class BoxCollisionHandling:public BaseFullSim{
 	
   public:
-	BoxCollisionHandling():BaseFullSim(){removeBBox();}
+	BoxCollisionHandling():BaseFullSim(){
+	  tolerance = 1e-3;
+	  max_iteration = 1000;
+	  removeBBox();
+	}
 	BoxCollisionHandling(pBaseFullModel def_model):BaseFullSim(def_model){removeBBox();}
+	bool init(const string ini_file){
+	  bool succ = BaseFullSim::init(ini_file);
+	  if (succ){
+		JsonFilePaser jsonf;
+		succ = jsonf.open(ini_file);
+		if (succ){
+		  vector<double> BBox;
+		  succ = jsonf.read("bound_box",BBox);
+		  if(succ) setBBox(BBox);
+		  vector<double> gravity;
+		  succ &= jsonf.read("gravity",gravity);
+		  if (gravity.size() == 3)
+			this->setExtForceForAllNodes(gravity[0],gravity[1],gravity[2]);
+		  jsonf.read("max_iteration",max_iteration,(unsigned int)1000); 
+		  assert_gt(max_iteration,0);
+		  jsonf.read("tolerance",tolerance,1e-3); assert_ge(tolerance,0.0f);
+		}
+	  }
+	  return succ;
+	}
 	void setConM(const VecT &C_triplet,const int C_rows,const int C_cols){/*no constraints*/}
 	bool prepare(){
 	  bool succ = BaseFullSim::prepare();
@@ -25,7 +50,42 @@ namespace SIMULATOR{
 	  return succ;
 	}
 	bool forward(){
-	  
+
+	  // initialize u,v,f,K
+	  const VectorXd u1 = u;
+	  const VectorXd u0 = u1-h*v;
+	  const VectorXd &x0 = def_model->getRestShape();
+	  SparseMatrix<double> K;
+	  def_model->evaluateK(u1,K);
+	  VectorXd f_int;
+	  def_model->evaluateF(u1,f_int);
+
+	  // assemble A,b
+	  const SparseMatrix<double> A = M*(1.0f/(h*h))+(1.0f/h)*(alpha_m*M+alpha_k*K)+K;
+	  const VectorXd b = fext-( M*(-2.0f*u1+u0)*(1.0f/(h*h))-(1.0f/h)*(alpha_m*M+alpha_k*K)*u1+f_int-K*u1 )+A*x0;
+	  const FixedSparseMatrix<double> As(A);
+
+	  // set bound constraints
+	  VectorXd L(x0.size()),U(x0.size());
+	  for (int i = 0; i < L.size()/3; ++i){
+		L.segment<3>(i*3) = Lower;
+		U.segment<3>(i*3) = Upper;
+	  }
+
+	  // solve
+	  // UmfPackLU<SparseMatrix<double> > solver;
+	  // solver.compute(A);
+	  // const VectorXd x = solver.solve(b);
+
+	  MPRGPQPSolver<double> solver(As,b,L,U,false);
+	  solver.setSolverParameters(tolerance,max_iteration);
+	  VectorXd x(A.rows());
+	  x.setZero();
+	  solver.solve(x);
+
+	  // update u,v
+	  u = x-x0;
+	  v = (u-u1)*(1.0f/h);
 	  return true;
 	}
 
@@ -34,6 +94,12 @@ namespace SIMULATOR{
 	  const double dMax = std::numeric_limits<double>::max();
 	  Lower << -dMax, -dMax, -dMax;
 	  Upper << dMax, dMax, dMax;
+	}
+	template<class VECTOR>
+	void setBBox(const VECTOR &XYZ){
+	  assert_eq(XYZ.size(),6);
+	  Lower << XYZ[0],XYZ[2],XYZ[4];
+	  Upper << XYZ[1],XYZ[3],XYZ[5];
 	}
 	void setXBBox(const double L, const double U){
 	  assert_gt(U,L);
@@ -55,6 +121,8 @@ namespace SIMULATOR{
 	}
 
   private:
+	double tolerance;
+	unsigned int max_iteration;
 	Vector3d Lower, Upper; // bounding box.
 	SparseMatrix<double> M; // mass matrix.
   };
