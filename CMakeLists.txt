@@ -83,6 +83,7 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 INCLUDE_DIRECTORIES(
   /usr/local/include/utility
+  /usr/local/include/MPRGP
   ${PROJECT_SOURCE_DIR}/src/simulator
 )
 

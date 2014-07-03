@@ -4,7 +4,9 @@
 #include <limits>
 #include <FullSimulator.h>
 #include <Eigen/UmfPackSupport>
-#include "MPRGP.h"
+#include <MPRGPSolver.h>
+using namespace MATH;
+// #include "QPSolver.h"
 
 namespace SIMULATOR{
   
@@ -77,11 +79,15 @@ namespace SIMULATOR{
 	  // solver.compute(A);
 	  // const VectorXd x = solver.solve(b);
 
-	  MPRGPQPSolver<double> solver(As,b,L,U,false);
-	  solver.setSolverParameters(tolerance,max_iteration);
-	  VectorXd x(A.rows());
-	  x.setZero();
-	  solver.solve(x);
+	  // MPRGPQPSolver<double> solver(As,b,L,U,true);
+	  // solver.setSolverParameters(tolerance,max_iteration);
+	  // VectorXd x = x0+u1;
+	  // solver.solve(x);
+	  // cout << "\niterations: " << solver.iterationsOut();
+	  // cout << "\nresidual: " << solver.residualOut() << "\n";
+
+	  VectorXd x = x0+u1;
+	  MPRGPBoxBound<double>::solve(As,b,L,U,x,tolerance,max_iteration);
 
 	  // update u,v
 	  u = x-x0;

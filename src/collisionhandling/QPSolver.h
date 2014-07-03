@@ -37,7 +37,18 @@ struct ScalarUtil<double> {
 template <typename T>
 struct FixedSparseMatrix{
 public:
-  FixedSparseMatrix(const Eigen::SparseMatrix<T> &M):A(M){}
+  FixedSparseMatrix(const Eigen::SparseMatrix<T> &M):A(M){
+	assert_eq(A.rows(),A.cols());
+	diag_A.resize(A.rows());
+	for(int k=0;k<A.outerSize();++k)
+	  for(typename Eigen::SparseMatrix<T>::InnerIterator it(A,k);it;++it){
+		if (it.col() == it.row()){
+		  assert_eq(it.row(),k);
+		  diag_A[k] = it.value();
+		  break;
+		}
+	  }
+  }
   template <typename VEC,typename VEC_OUT>
   void multiply(const VEC& x,VEC_OUT& result)const{
 	result = A*x;
@@ -46,8 +57,8 @@ public:
 	return A.rows();
   }
   double diag(const int i)const{
-	assert(false);
-	// return (*this)(i,i);
+	assert_in(i,0,diag_A.size()-1);
+	return diag_A[i];
   }
   double funValue(const VectorXd &x)const{
 	printf("unimplemented function is called\n");
@@ -55,6 +66,7 @@ public:
   }
 protected:
   const Eigen::SparseMatrix<T> &A;
+  VectorXd diag_A;
 };
 
 // Iteration callback
@@ -95,6 +107,8 @@ public:
   };
   Solver():_cb((Callback<T, FUNCTION>*)NULL) {}
   virtual void setCallback(typename boost::shared_ptr<Callback<T, FUNCTION> >cb){_cb=cb;}
+  sizeType iterationsOut()const{return _iterationsOut;}
+  T residualOut()const{return _residualOut;}
 
 protected:
   sizeType _iterationsOut;
@@ -227,6 +241,8 @@ public:
   MPRGPQPSolver(const MAT& A,const Vec& B,const Vec& L,const Vec& H,const bool precond=true)
   	:_A(A),_B(B),_L(L),_H(H){
   	setSolverParameters(1e-5f,1000);
+	_Gamma=1.0f;
+	_alphaBar=2.0f/specRad(_A);
   	KERNEL_TYPE::copy(_B,_g);
   	KERNEL_TYPE::copy(_B,_p);
   	KERNEL_TYPE::copy(_B,_z);
@@ -247,8 +263,6 @@ public:
 	_toleranceFactor=toleranceFactor;
 	if(_toleranceFactor<1e-30f)
 	  _toleranceFactor=1e-30f;
-	_Gamma=1.0f;
-	_alphaBar=2.0f/specRad(_A);
   }
   virtual void setInFacePreconditioner(boost::shared_ptr<InFaceNoPreconSolver<T,KERNEL_TYPE,MAT,FUNCTION> > pre){
   	_pre=pre;
@@ -276,7 +290,7 @@ public:
   	  }
   	  tmpOut/=normTmpOut;
   	  delta=(tmpOut-tmp).norm();
-  	  printf("Power Iter %d Err: %f, SpecRad: %f\n",iter,delta,normTmpOut);
+  	  // printf("Power Iter %d Err: %f, SpecRad: %f\n",iter,delta,normTmpOut);
 	  if(delta <= eps){
 		if(ev)*ev=tmp;
 		return normTmpOut;
@@ -320,6 +334,7 @@ public:
 
   	//MPRGP iteration
   	sizeType iteration;
+	typename Solver<T, FUNCTION>::SOLVER_RESULT result_code = Solver<T, FUNCTION>::NOT_CONVERGENT;
   	for(iteration=0;iteration<_maxIterations;iteration++){
 
 	  //test termination
@@ -330,7 +345,8 @@ public:
 	  if(_cb) (*_cb)(result,_residualOut,iteration);
 	  if(_residualOut < _toleranceFactor){
 		_iterationsOut=iteration;
-		return Solver<T, FUNCTION>::SUCCESSFUL;
+		result_code = Solver<T, FUNCTION>::SUCCESSFUL;
+		break;
 	  }
 
 	  //test proportional x
@@ -414,7 +430,7 @@ public:
 	}
 
   	_iterationsOut=iteration;
-  	return Solver<T, FUNCTION>::NOT_CONVERGENT;
+  	return result_code;
   }
   static void MASK_FACE(const Vec& in,Vec& out,const std::vector<char>& face){
   	OMP_PARALLEL_FOR_
@@ -458,7 +474,8 @@ protected:
   		  out[i]=0.0f;
   		else if(face[i] == 1)
   		  out[i]=std::max<T>(in[i],0.0f);
-  		else out[i]=std::min<T>(in[i],0.0f);
+  		else 
+		  out[i]=std::min<T>(in[i],0.0f);
   }
   static void DECIDE_FACE(const Vec& x,const Vec& L,const Vec& H,std::vector<char>& face){
   	face.assign(x.rows(),0);

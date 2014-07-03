@@ -22,6 +22,7 @@ void simulateAndSave(const string ini_file){
 	string tet_file;
 	succ = jsonf.readFilePath("vol_file",tet_file); assert(succ);
 	succ = tet_mesh->load(tet_file); assert(succ);
+	cout << "number of nodes: " << tet_mesh->nodes().size() << endl;
 
 	string mtl_file;
 	succ = jsonf.readFilePath("elastic_mtl",mtl_file); assert(succ);
