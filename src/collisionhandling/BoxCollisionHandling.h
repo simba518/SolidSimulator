@@ -86,8 +86,22 @@ namespace SIMULATOR{
 	  // cout << "\niterations: " << solver.iterationsOut();
 	  // cout << "\nresidual: " << solver.residualOut() << "\n";
 
+	  // VectorXd x = x0+u1;
+	  // MPRGPBoxBound<double>::solve(As,b,L,U,x,tolerance,max_iteration);
+
+
 	  VectorXd x = x0+u1;
-	  MPRGPBoxBound<double>::solve(As,b,L,U,x,tolerance,max_iteration);
+	  vector<Vector4d,aligned_allocator<Vector4d> > planes;
+	  Vector4d p;
+
+	  p << 1,0.1,0,1.0;
+	  p.head(3) /= p.head(3).norm();
+	  planes.push_back(p);
+
+	  // p << -1,1,0,1.0;
+	  // p.head(3) /= p.head(3).norm();
+	  // planes.push_back(p);
+	  MPRGPPlane<double>::solve(As,b,planes,x,tolerance,max_iteration);
 
 	  // update u,v
 	  u = x-x0;
