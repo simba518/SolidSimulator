@@ -101,7 +101,7 @@ namespace SIMULATOR{
 	  // p << -1,1,0,1.0;
 	  // p.head(3) /= p.head(3).norm();
 	  // planes.push_back(p);
-	  MPRGPPlane<double>::solve(As,b,planes,x,tolerance,max_iteration);
+	  MPRGPPlane<double>::solve(As,b,planes,x,tolerance,max_iteration*10);
 
 	  // update u,v
 	  u = x-x0;
