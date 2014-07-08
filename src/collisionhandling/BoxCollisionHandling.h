@@ -94,7 +94,7 @@ namespace SIMULATOR{
 	  vector<Vector4d,aligned_allocator<Vector4d> > planes;
 	  Vector4d p;
 
-	  p << 0,1,0,0.2;
+	  p << 1,1,0,0.2;
 	  p.head(3) /= p.head(3).norm();
 	  planes.push_back(p);
 
