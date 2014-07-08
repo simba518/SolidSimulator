@@ -94,14 +94,14 @@ namespace SIMULATOR{
 	  vector<Vector4d,aligned_allocator<Vector4d> > planes;
 	  Vector4d p;
 
-	  p << 0,1,0,0.2;
+	  p << 1,1,0,0.2;
 	  p.head(3) /= p.head(3).norm();
 	  planes.push_back(p);
 
 	  // p << -1,1,0,1.0;
 	  // p.head(3) /= p.head(3).norm();
 	  // planes.push_back(p);
-	  MPRGPPlane<double>::solve(As,b,planes,x,tolerance,max_iteration);
+	  MPRGPPlane<double>::solve(As,b,planes,x,tolerance,max_iteration*10);
 
 	  // update u,v
 	  u = x-x0;

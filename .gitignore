@@ -4,3 +4,6 @@
 *.out
 */*tempt*
 */*/*tempt*
+bin
+build
+lib
