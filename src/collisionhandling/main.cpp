@@ -36,6 +36,14 @@ void simulateAndSave(const string ini_file){
   PlaneCollisionHandling collision_sim(def_model);
   succ = collision_sim.prepare(); assert(succ);
   succ = collision_sim.init(ini_file); assert(succ);
+
+  // set gravity
+  vector<double> gravity;
+  succ &= jsonf.read("gravity",gravity);
+  assert_eq(gravity.size(),3);
+  VectorXd gravity_forces;
+  tet_mesh->computeGravity(gravity, gravity_forces);
+  collision_sim.setExtForce(gravity_forces);
   
   {// simulation, save results
 	vector<VectorXd> record_u;

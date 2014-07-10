@@ -25,10 +25,6 @@ namespace SIMULATOR{
 		JsonFilePaser jsonf;
 		succ = jsonf.open(ini_file);
 		if (succ){
-		  vector<double> gravity;
-		  succ &= jsonf.read("gravity",gravity);
-		  if (gravity.size() == 3)
-			this->setExtForceForAllNodes(gravity[0],gravity[1],gravity[2]);
 		  jsonf.read("max_iteration",max_iteration,(unsigned int)1000); 
 		  assert_gt(max_iteration,0);
 		  jsonf.read("tolerance",tolerance,1e-3); assert_ge(tolerance,0.0f);
