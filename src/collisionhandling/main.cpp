@@ -32,7 +32,8 @@ void simulateAndSave(const string ini_file){
   pFullStVKSimModel def_model = pFullStVKSimModel(new FullStVKSimModel());
   def_model->setTetMesh(tet_mesh);
 
-  BoxCollisionHandling collision_sim(def_model);
+  // BoxCollisionHandling collision_sim(def_model);
+  PlaneCollisionHandling collision_sim(def_model);
   succ = collision_sim.prepare(); assert(succ);
   succ = collision_sim.init(ini_file); assert(succ);
   
