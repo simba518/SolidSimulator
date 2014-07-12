@@ -1,0 +1,41 @@
+\documentclass[9pt,twocolumn]{extarticle}
+
+\usepackage[hmargin=0.5in,tmargin=0.5in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{subfigure}
+
+\usepackage{cleveref}
+\usepackage{color}
+\newcommand{\TODO}[1]{\textcolor{red}{#1}}
+
+\newcommand{\FPP}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\argmin}{\operatornamewithlimits{arg\ min}}
+\author{Siwang Li}
+
+\title{Material}
+
+%% document begin here
+\begin{document}
+\maketitle
+
+\setlength{\parskip}{0.5ex}
+
+\section{Material}
+\begin{center}
+  \begin{tabular}{ | l | l | l|l|}
+    \hline
+	&Density $kg/m^3$ & Young's $10^9N/m^2$ & Possion's  \\ \hline
+	rubbon&$[800,1500]$& $[0.01,0.1]$ & $[0.25,0.5]$ \\ \hline
+  \end{tabular}
+\end{center}
+The gravity is $9.8m/s^2$.
+
+%% references
+\begin{thebibliography}{99}
+\bibitem{density} http://www.simetric.co.uk/si\_materials.htm
+\bibitem{young} http://www.engineeringtoolbox.com/young-modulus-d\_417.html
+\end{thebibliography}
+
+\end{document}
