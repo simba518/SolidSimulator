@@ -26,6 +26,17 @@ void simulateAndSave(const string ini_file){
 	succ = tet_mesh->load(tet_file); assert(succ);
 	INFO_LOG("number of nodes: " << tet_mesh->nodes().size());
 	INFO_LOG("number of tets: " << tet_mesh->tets().size());
+	vector<double> move;
+	if (jsonf.read("move_mesh",move)){
+	  assert_eq(move.size(),3);
+	  VectorXd u(tet_mesh->nodes().size()*3);
+	  for (int i = 0; i < u.size()/3; ++i){
+		u[i*3+0] = move[0];
+		u[i*3+1] = move[1];
+		u[i*3+2] = move[2];
+	  }
+	  tet_mesh->applyDeformation(u);
+	}
 
 	string mtl_file;
 	succ = jsonf.readFilePath("elastic_mtl",mtl_file); assert(succ);

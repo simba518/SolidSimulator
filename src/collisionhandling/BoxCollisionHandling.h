@@ -5,8 +5,9 @@
 #include <FullSimulator.h>
 #include <Eigen/UmfPackSupport>
 #include <MPRGPSolver.h>
+#include <Objmesh.h>
 using namespace MATH;
-// #include "QPSolver.h"
+using namespace UTILITY;
 
 namespace SIMULATOR{
 
@@ -171,9 +172,16 @@ namespace SIMULATOR{
 		JsonFilePaser jsonf;
 		succ = jsonf.open(ini_file);
 		if (succ){
-		  vector<double> planes;
-		  succ = jsonf.read("planes",planes);
-		  if(succ) setPlanes(planes);
+		  string scene_file;
+		  if (jsonf.readFilePath("scene",scene_file)){
+			Objmesh scene;
+			succ = scene.load(scene_file);
+			if (succ) scene.toPlanes(planes);
+		  }else{
+			vector<double> planes;
+			succ = jsonf.read("planes",planes);
+			if(succ) setPlanes(planes);
+		  }
 		}
 	  }
 	  return succ;
