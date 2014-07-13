@@ -1,0 +1,25 @@
+
+\begin{figure}
+  \centering
+  \subfigure[iteration curves] { \label{fig:b}
+    \includegraphics[width=0.4\textwidth]{#iter_curves#}
+  }
+  \subfigure[constraints] { \label{fig:a}
+    \includegraphics[width=0.4\textwidth]{#con_nodes#}
+  }
+  \subfigure[time statistics] { \label{fig:a}
+    \includegraphics[width=0.4\textwidth]{#time_fig#}
+  }
+  \caption{statics of #init_file_name#}
+  \label{en_f}
+\end{figure}
+
+\begin{center}
+  \begin{tabular}{|l*{8}{|l}}
+    \hline
+	file & #init_file_name# \\ \hline
+	nodes & #number_of_nodes# \\ \hline
+	h & #time_step# \\ \hline
+	tets & #number_of_tets# \\ \hline
+  \end{tabular}
+\end{center}

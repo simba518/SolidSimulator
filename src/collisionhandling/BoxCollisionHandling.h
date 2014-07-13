@@ -30,6 +30,7 @@ namespace SIMULATOR{
 		  jsonf.read("tolerance",tolerance,1e-3); assert_ge(tolerance,0.0f);
 		}
 	  }
+	  INFO_LOG("time step: "<<h);
 	  return succ;
 	}
 	virtual void setConM(const VecT &C_triplet,const int C_rows,const int C_cols){/*no constraints*/}
@@ -45,10 +46,17 @@ namespace SIMULATOR{
 	  const VectorXd u1 = u;
 	  const VectorXd u0 = u1-h*v;
 	  const VectorXd &x0 = def_model->getRestShape();
+
 	  SparseMatrix<double> K;
+	  Timer timer;
+	  timer.start();
 	  def_model->evaluateK(u1,K);
+	  timer.stop("evaluateK: ");
+
 	  VectorXd f_int;
+	  timer.start();
 	  def_model->evaluateF(u1,f_int);
+	  timer.stop("evaluateF: ");
 
 	  // assemble A,b for implicit integration.
 	  const SparseMatrix<double> A = M*(1.0f/(h*h))+(1.0f/h)*(alpha_m*M+alpha_k*K)+K;
@@ -191,6 +199,8 @@ namespace SIMULATOR{
 
   protected:
 	bool solve(const SparseMatrix<double> &A, const VectorXd &b, VectorXd &x){
+
+	  FUNC_TIMER();
 	  const FixedSparseMatrix<double> As(A);
 	  MPRGPPlane<double>::solve(As,b,planes,x,tolerance,max_iteration);
 	  return true;

@@ -10,6 +10,8 @@ double ScalarUtil<double>::scalar_eps=1E-9;
 
 void simulateAndSave(const string ini_file){
 
+  INFO_LOG("init file: "<< ini_file);
+
   JsonFilePaser jsonf;
   bool succ = jsonf.open(ini_file); assert(succ);
   string save_to;
@@ -22,7 +24,8 @@ void simulateAndSave(const string ini_file){
 	string tet_file;
 	succ = jsonf.readFilePath("vol_file",tet_file); assert(succ);
 	succ = tet_mesh->load(tet_file); assert(succ);
-	cout << "number of nodes: " << tet_mesh->nodes().size() << endl;
+	INFO_LOG("number of nodes: " << tet_mesh->nodes().size());
+	INFO_LOG("number of tets: " << tet_mesh->tets().size());
 
 	string mtl_file;
 	succ = jsonf.readFilePath("elastic_mtl",mtl_file); assert(succ);
