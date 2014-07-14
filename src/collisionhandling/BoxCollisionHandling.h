@@ -63,6 +63,9 @@ namespace SIMULATOR{
 	  const SparseMatrix<double> A = M*(1.0f/(h*h))+(1.0f/h)*(alpha_m*M+alpha_k*K)+K;
 	  const VectorXd b = fext-( M*(-2.0f*u1+u0)*(1.0f/(h*h))-(1.0f/h)*(alpha_m*M+alpha_k*K)*u1+f_int-K*u1 )+A*x0;
 
+	  // @debug
+	  // checkEigenValue(A);
+
 	  // set initial value for x, then solve it.
 	  VectorXd x = x0+u1;
 	  bool succ = solve(A,b,x);
@@ -80,6 +83,18 @@ namespace SIMULATOR{
 	  solver.compute(A);
 	  x = solver.solve(b);
 	  return true;
+	}
+	void checkEigenValue(const SparseMatrix<double> &A)const{
+
+	  const MatrixXd dA = A;
+	  SelfAdjointEigenSolver<MatrixXd> eigensolver(dA);
+	  INFO_LOG("eig(A): " << eigensolver.eigenvalues().transpose());
+	  const double smallest_eig = eigensolver.eigenvalues()[0];
+	  const double largest_eig = eigensolver.eigenvalues()[A.rows()-1];
+	  assert_ne(smallest_eig,0);
+	  INFO_LOG("largest_eig(A): " << largest_eig);
+	  INFO_LOG("smallest_eig(A): " << smallest_eig);
+	  INFO_LOG("cond(A): " << largest_eig/smallest_eig);
 	}
 
   protected:
@@ -209,6 +224,7 @@ namespace SIMULATOR{
 	bool solve(const SparseMatrix<double> &A, const VectorXd &b, VectorXd &x){
 
 	  FUNC_TIMER();
+	  assert(writeQP<double>(A,b,planes,x,"tempt_QP.txt"));
 	  const FixedSparseMatrix<double> As(A);
 	  MPRGPPlane<double>::solve(As,b,planes,x,tolerance,max_iteration);
 	  return true;
