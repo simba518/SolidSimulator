@@ -11,6 +11,8 @@ using namespace UTILITY;
 
 namespace SIMULATOR{
 
+  typedef vector<Vector4d,aligned_allocator<Vector4d> > VVec4d;
+
   // base class for the collision handling simulator.
   class CollisionHandlingSim:public BaseFullSim{
 	
@@ -199,6 +201,7 @@ namespace SIMULATOR{
 		  }
 		}
 	  }
+	  removeSamePlanes(planes);
 	  return succ;
 	}
 
@@ -212,12 +215,33 @@ namespace SIMULATOR{
 	  Vector4d p;
 	  p.setZero();
 	  for (int i = 0; i < planes_vec_n_p.size(); i+=4){
+
 		p << planes_vec_n_p[i], planes_vec_n_p[i+1], planes_vec_n_p[i+2], planes_vec_n_p[i+3];
 		const double p_norm = p.head(3).norm();
 		assert_gt(p_norm,0);
 		p.head(3) *= 1.0/p_norm;
 		planes.push_back(p);
 	  }
+	}
+	
+	void removeSamePlanes(VVec4d &planes)const{
+
+	  const VVec4d tempt = planes;
+	  planes.clear();
+	  planes.reserve(tempt.size());
+	  for (int i = 0; i < tempt.size(); ++i){
+		const Vector4d &p = tempt[i];
+		int k = 0;
+		for (; k < planes.size(); ++k){
+		  if ((p-planes[k]).norm() <= 1e-4)
+			break;
+		}
+		if (k == planes.size())
+		  planes.push_back(p);
+	  }
+	  
+	  INFO_LOG("input planes: "<< tempt.size());
+	  INFO_LOG("reserved planes: "<< planes.size());
 	}
 
   protected:
@@ -231,7 +255,7 @@ namespace SIMULATOR{
 	}
 
   private:
-	vector<Vector4d,aligned_allocator<Vector4d> > planes;
+	VVec4d planes;
   };
   
 }//end of namespace
