@@ -1,8 +1,8 @@
 #ifndef _SELECTIONOP_H_
 #define _SELECTIONOP_H_
 
-#include <boost/shared_ptr.hpp>
 #include <QObject>
+#include <boost/shared_ptr.hpp>
 #include <SelectCtrl.h>
 #include <Selectable.h>
 #include "DataModel.h"

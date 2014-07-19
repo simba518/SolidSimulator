@@ -1,11 +1,11 @@
 #ifndef _DATAMODELRENDER_H_
 #define _DATAMODELRENDER_H_
 
+#include <QObject>
 #include <boost/shared_ptr.hpp>
 #include <SelfRenderEle.h>
 #include <MeshRender.h>
 #include <VolNodeGroupRender.h>
-#include <QObject>
 #include "DataModel.h"
 #include <QGLViewerExt.h>
 #include <GL/gl.h>

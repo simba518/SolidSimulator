@@ -1,8 +1,8 @@
 #ifndef _DATAMODEL_H_
 #define _DATAMODEL_H_
 
-#include <boost/shared_ptr.hpp>
 #include <QObject>
+#include <boost/shared_ptr.hpp>
 #include <Log.h>
 #include <AuxTools.h>
 #include <MatrixIO.h>

@@ -3,6 +3,8 @@
 #include <SubspaceSimulator.h>
 #include <FullStVKSimulator.h>
 #include <MatrixIO.h>
+#include <Timer.h>
+using namespace UTILITY;
 using namespace SIMULATOR;
 
 DataModel::DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
@@ -41,9 +43,12 @@ pSimulator DataModel::createSimulator(const string filename)const{
 	sim = pSimulator(new SubspaceSimulator(elas_m,static_sim,string("cubature static")));
   }else if ("modal_analysis" == simulator_name){
 	sim = pSimulator(new MASimulator());
+  }else if ("semi_implicit" == simulator_name){
+	pBaseFullSim semi_sim = pBaseFullSim(new PenSemiExpFullSim());
+	sim = pSimulator(new FullStVKSimulator(semi_sim,"full semi implicit"));
   }else{
-	pBaseFullSim static_sim = pBaseFullSim(new LagImpFullSim());
-	sim = pSimulator(new FullStVKSimulator(static_sim,"full stvk"));
+	pBaseFullSim stvk_sim = pBaseFullSim(new LagImpFullSim());
+	sim = pSimulator(new FullStVKSimulator(stvk_sim,"full stvk"));
   }
 
   return sim;
@@ -188,11 +193,17 @@ bool DataModel::simulate(){
 	_simulator->setExtForce(f_ext);
   }
 
+
   if(_simulator){
+
+	Timer timer;
+	timer.start();
 	succ = _simulator->forward();
 	for (int i = 1; i < steps; ++i){
 	  succ &= _simulator->forward();
 	}
+	timer.stop("time for simulate ");
+
 	_volObj->interpolate(getU());
   }
 

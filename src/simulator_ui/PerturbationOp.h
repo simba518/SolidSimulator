@@ -1,8 +1,8 @@
 #ifndef _PERTURBATIONOP_H_
 #define _PERTURBATIONOP_H_
 
-#include <boost/shared_ptr.hpp>
 #include <QObject>
+#include <boost/shared_ptr.hpp>
 #include <Perturbator.h>
 #include <SelectCtrl.h>
 #include <Selectable.h>
