@@ -18,6 +18,7 @@ void simulateAndSave(const string ini_file){
   int num_frames;
   succ = jsonf.readFilePath("save_to",save_to,false); assert(succ);
   succ = jsonf.read("num_frames",num_frames,200); assert_ge(num_frames,0);
+  INFO_LOG("total frames: "<<num_frames);
 
   pTetMesh tet_mesh = pTetMesh(new TetMesh());
   { // load tet mesh
@@ -61,11 +62,16 @@ void simulateAndSave(const string ini_file){
   
   {// simulation, save results
 	vector<VectorXd> record_u;
+	
+	Timer timer;
+	timer.start();
 	for (int i = 0; i < num_frames; ++i){
-	  cout << "step: " << i << endl;
+	  INFO_LOG("step: " << i);
 	  collision_sim.forward();
 	  record_u.push_back(collision_sim.getU());
 	}
+	timer.stop("total simulation time: ");
+
 	bool succ = tet_mesh->writeVTK(save_to, record_u);
 	assert(succ);
   }

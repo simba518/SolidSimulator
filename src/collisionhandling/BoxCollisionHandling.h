@@ -248,7 +248,7 @@ namespace SIMULATOR{
 	bool solve(const SparseMatrix<double> &A, const VectorXd &b, VectorXd &x){
 
 	  FUNC_TIMER();
-	  assert(writeQP<double>(A,b,planes,x,"tempt_QP.txt"));
+	  DEBUG_FUN(assert(writeQP<double>(A,b,planes,x,"tempt_QP.txt")));
 	  const FixedSparseMatrix<double> As(A);
 	  MPRGPPlane<double>::solve(As,b,planes,x,tolerance,max_iteration);
 	  return true;

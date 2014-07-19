@@ -78,6 +78,13 @@ tex_str = open("./script/report_head.tex").read()
 for log_f in log_fs:
 
     if not log_f.endswith(".txt"): continue
+    if log_f.find("one_tet") >=0 : continue
+    if log_f.find("coarse") >=0 : continue
+    # if not log_f.find("dino") >=0 : continue
+    # if not log_f.find("beam") >=0 : continue
+    if log_f.find("4") >=0 and log_f.find("dino") < 0 : continue
+
+    print log_f
 
     tempt = report_tex+"tempt"
     os.system("cp "+"./script/report_data.tex "+tempt)
@@ -102,6 +109,13 @@ for log_f in log_fs:
     changeElements(tempt,"#number_of_nodes#", grepInt(log_f, "number of nodes:"))
     changeElements(tempt,"#number_of_tets#", grepInt(log_f, "number of tets:"))
     changeElements(tempt,"#time_step#", grepFloat(log_f, "time step:"))
+    changeElements(tempt,"#total_time#", grepFloat(log_f, "total simulation time:"))
+    changeElements(tempt,"#number_of_frames#", grepFloat(log_f, "total frames:"))
+    changeElements(tempt,"#input_plane#", grepFloat(log_f, "input planes:"))
+    changeElements(tempt,"#reserved_plane#", grepFloat(log_f, "reserved planes:"))
+    changeElements(tempt,"#total-cg#", sumInt(log_f,"cg steps: "))
+    changeElements(tempt,"#total-exp#", sumInt(log_f,"exp steps: "))
+    changeElements(tempt,"#total-prop#", sumInt(log_f,"prop steps: "))
 
     initfilename = grepStr(log_f,"init file:")
     if len(initfilename) > 0:
