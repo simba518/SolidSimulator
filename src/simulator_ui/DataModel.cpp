@@ -44,7 +44,7 @@ pSimulator DataModel::createSimulator(const string filename)const{
   }else if ("modal_analysis" == simulator_name){
 	sim = pSimulator(new MASimulator());
   }else if ("semi_implicit" == simulator_name){
-	pBaseFullSim semi_sim = pBaseFullSim(new PenSemiExpFullSim());
+	pBaseFullSim semi_sim = pBaseFullSim(new PenSemiImpFullSim());
 	sim = pSimulator(new FullStVKSimulator(semi_sim,"full semi implicit"));
   }else{
 	pBaseFullSim stvk_sim = pBaseFullSim(new LagImpFullSim());
